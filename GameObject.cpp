@@ -1,16 +1,27 @@
 #include "GameObject.h"
 
 
-void gameObject::start()
-{
+void gameObject::start() {
+
+	for (auto component : components) {
+		component->start();
+	}
+
+	//TODO: start all children game objects
+	//TODO: start all functionalities
 }
 
-void gameObject::update()
-{
+void gameObject::update() {
+	for (auto component : components) {
+		component->update();
+	}
 }
 
 void gameObject::end()
 {
+	for (auto component : components) {
+		component->end();
+	}
 }
 
 void gameObject::render()
@@ -25,4 +36,9 @@ template<typename T> T* gameObject::getComponent() {
 		}
 	}
 	return nullptr;
+}
+
+void gameObject::addComponent(Component* component) {
+	//TODO: check if component of same type already exists in the components vector, if so, throw error
+	components.push_back(component);
 }

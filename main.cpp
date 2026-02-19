@@ -1,12 +1,20 @@
+//Standard headers
+
+//OpenGL headers
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+//GLM headers
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>	
 
 //Custom headers
-
 #include "Scene.h"
 #include "GameScene.h"
+
+
 //Define macros here
 #define elif  else if
 

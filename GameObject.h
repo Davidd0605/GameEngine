@@ -3,36 +3,30 @@
 
 #include <string>
 #include <vector>
-#include <GLFW/glfw3.h>
-
+#include "Component.h"
 
 class gameObject {
 
 public:
 	
-	float vertices[100];
-	int indices[100];
 	std::string name;
-
-	std::vector<gameObject*> children;
-	
-	//vector of components
-
-	//Transform component
-	//Mesh component
-	//Collider component
-
-
-	GLuint VBO, VAO, EBO;
+	//std::vector<Functionality*>
 
 	void start();
 	void update();
 	void end();
+
 	void render();
 
 	template<typename T> T* getComponent();
+	void addComponent(Component* component);
+	template<typename T> T* removeComponent();
 
-	//addComponent()
+	//add, remove, get functionalities, to be added when functionality sys is in place.
+
+private:
+	std::vector<gameObject*> children;
+	std::vector<Component*> components;
 };
 #endif // ! GAME_OBJECT_H
 
