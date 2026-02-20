@@ -23,12 +23,13 @@ Mesh::Mesh(float vertices[], int verticesSize,
 		vbo = new VBO(vertices, GL_STATIC_DRAW, stride, noAttributes, attributeSize);
 	}
 
-	if (indices == nullptr) {
-		std::cerr << "Error :: Mesh :: indices array is null" << std::endl;
-	}
-	else {
-		//ebo = new EBO(indices, GL_STATIC_DRAW);
-	}
+	//TODO add EBO suport
+	//if (indices == nullptr) {
+	//	std::cerr << "Error :: Mesh :: indices array is null" << std::endl;
+	//}
+	//else {
+	//	//ebo = new EBO(indices, GL_STATIC_DRAW);
+	//}
 
 	vao->Bind();
 	vbo->Bind();

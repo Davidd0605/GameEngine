@@ -3,9 +3,10 @@
 class Component
 {
 public:
-	void start();
-	void update();
-	void end();
+	virtual ~Component() {};
+	void virtual start() = 0;
+	void virtual update() = 0;
+	void virtual end() = 0;
 };
 
 #endif // !COMPONENT_H

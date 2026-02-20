@@ -4,14 +4,15 @@
 #include <string>
 #include <vector>
 #include "Component.h"
+#include "Mesh.h"
 
 class gameObject {
 
 public:
 	
 	std::string name;
-	//std::vector<Functionality*>
 
+	gameObject(std::string name);
 	void start();
 	void update();
 	void end();
@@ -19,7 +20,7 @@ public:
 	void render();
 
 	template<typename T> T* getComponent();
-	void addComponent(Component* component);
+	template<typename T> T* addComponent();
 	template<typename T> T* removeComponent();
 
 	//add, remove, get functionalities, to be added when functionality sys is in place.
@@ -27,6 +28,7 @@ public:
 private:
 	std::vector<gameObject*> children;
 	std::vector<Component*> components;
+	//std::vector<Functionality*>
 };
 #endif // ! GAME_OBJECT_H
 

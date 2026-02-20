@@ -13,7 +13,7 @@
 //Custom headers
 #include "Scene.h"
 #include "GameScene.h"
-
+#include "GameObject.h"
 
 //Define macros here
 #define elif  else if
@@ -80,7 +80,10 @@ void globalEnd(Scene* scene) {
 int main() {
 
 	//Create the game scene
-	GameScene* gameScene = new GameScene();
+	GameScene* gameScene = new GameScene("Test game scene 1");
+
+	gameObject* go = new gameObject("Testicle");
+	gameScene->addObject(go);
 
 	globalStart(gameScene);
 	globalUpdate(gameScene);

@@ -23,7 +23,7 @@ class Mesh {
 	private :
 
 		//GPU buffer objects
-		EBO* ebo;
+		//EBO* ebo;
 		VBO* vbo;
 		VAO* vao;
 

@@ -1,8 +1,10 @@
 #include "GameObject.h"
 
-
+gameObject::gameObject(std::string name) {
+	this->name = name;
+}
 void gameObject::start() {
-
+	
 	for (auto component : components) {
 		component->start();
 	}
@@ -12,6 +14,7 @@ void gameObject::start() {
 }
 
 void gameObject::update() {
+	this->render();
 	for (auto component : components) {
 		component->update();
 	}
@@ -26,6 +29,15 @@ void gameObject::end()
 
 void gameObject::render()
 {
+
+	//Check if we have a mesh to render
+	if (this->getComponent<Mesh>()) {
+		Mesh* mesh = this->getComponent<Mesh>();
+		mesh->Draw();
+	}
+	else {
+		std::cout << "Tried rendering without mesh";
+	}
 }
 
 template<typename T> T* gameObject::getComponent() {
@@ -38,7 +50,23 @@ template<typename T> T* gameObject::getComponent() {
 	return nullptr;
 }
 
-void gameObject::addComponent(Component* component) {
-	//TODO: check if component of same type already exists in the components vector, if so, throw error
-	components.push_back(component);
+//TODO
+template<typename T> T* gameObject::addComponent()
+{
+	return;
+	// Check if component already exists
+	if (getComponent<T>() != nullptr)
+	{
+		throw std::runtime_error("Component already exists on GameObject.");
+	}
+
+	T* newComponent = new T();
+	components.push_back(newComponent);
+
+	return newComponent;
+}
+
+//TODO
+template <typename T> T* gameObject::removeComponent() {
+	return;
 }
