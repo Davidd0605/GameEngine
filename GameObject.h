@@ -20,7 +20,7 @@ public:
 	void render();
 
 	template<typename T> T* getComponent();
-	template<typename T> T* addComponent();
+	void addComponent(Component* component);
 	template<typename T> T* removeComponent();
 
 	//add, remove, get functionalities, to be added when functionality sys is in place.

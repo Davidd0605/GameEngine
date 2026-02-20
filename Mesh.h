@@ -7,33 +7,39 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
+#include "Component.h"
 
 #include <iostream>
-class Mesh {
-	public:
-		Mesh(float vertices[], int verticesSize,
-			int indices[], int indicesSize,
-			ShaderPass* shaderPass,
-			int stride, int noAttributes, int attributeSize[],
-			bool useEbo);
 
-		void virtual Draw(); //allow for polymorphism in case of animated meshes or other mesh types in the future
+class Mesh : public Component {
+public:
+    Mesh(float vertices[], int verticesSize,
+         int indices[], int indicesSize,
+         ShaderPass* shaderPass,
+         int stride, int noAttributes, int attributeSize[],
+         bool useEbo);
 
-		bool useEbo;
-	private :
+    virtual void Draw(); // allow for polymorphism in case of other mesh types in the future
 
-		//GPU buffer objects
-		//EBO* ebo;
-		VBO* vbo;
-		VAO* vao;
+    // Component lifecycle overrides
+    void start() override;
+    void update() override;
+    void end() override;
 
-		//Mesh data
-		float* vertices;
-		int verticesSize;
+    bool useEbo;
+private :
 
-		int* indices;
-		int indicesSize;
+    //GPU buffer objects
+    EBO* ebo;
+    VBO* vbo;
+    VAO* vao;
 
+    //Mesh data
+    float* vertices;
+    int verticesSize;
+
+    int* indices;
+    int indicesSize;
 };
 
 #endif

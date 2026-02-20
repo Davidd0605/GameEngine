@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <iostream>
 
 
 Mesh::Mesh(float vertices[], int verticesSize,
@@ -24,12 +25,12 @@ Mesh::Mesh(float vertices[], int verticesSize,
 	}
 
 	//TODO add EBO suport
-	//if (indices == nullptr) {
-	//	std::cerr << "Error :: Mesh :: indices array is null" << std::endl;
-	//}
-	//else {
-	//	//ebo = new EBO(indices, GL_STATIC_DRAW);
-	//}
+	if (indices == nullptr) {
+		std::cerr << "Error :: Mesh :: indices array is null" << std::endl;
+	}
+	else {
+		ebo = new EBO(indices, GL_STATIC_DRAW);
+	}
 
 	vao->Bind();
 	vbo->Bind();
@@ -45,4 +46,17 @@ void Mesh::Draw() {
 
 	glDrawArrays(GL_TRIANGLES, 0, verticesSize);
 	vao->Unbind();
+}
+
+
+void Mesh::start() {
+	return;
+}
+
+void Mesh::update() {
+	return;
+}
+
+void Mesh::end() {
+	return;
 }

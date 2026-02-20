@@ -1,13 +1,15 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
+
+// Base class for all components. Make it polymorphic so dynamic_cast works.
 class Component
 {
 public:
-	virtual ~Component() {};
-	void virtual start() = 0;
-	void virtual update() = 0;
-	void virtual end() = 0;
+    virtual ~Component() = default;   // polymorphic type
+    virtual void start() {}          // default no-op implementations
+    virtual void update() {}
+    virtual void end() {}
 };
 
-#endif // !COMPONENT_H
+#endif // COMPONENT_H
 

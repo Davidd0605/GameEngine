@@ -17,7 +17,7 @@
 
 //Define macros here
 #define elif  else if
-
+GLFWwindow* window;
 float globalWidth, globalHeight;
 
 void windowResize(GLFWwindow * window, int width, int height) {
@@ -60,8 +60,7 @@ void globalStart(Scene* scene) {
 }
 
 void globalUpdate(Scene* scene) {
-	GLFWwindow* window;
-	setupGL(window);
+
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -79,10 +78,42 @@ void globalEnd(Scene* scene) {
 }
 int main() {
 
+	setupGL(window);
 	//Create the game scene
 	GameScene* gameScene = new GameScene("Test game scene 1");
 
 	gameObject* go = new gameObject("Testicle");
+
+
+	//		Mesh(float vertices[], int verticesSize,
+	//int indices[], int indicesSize,
+	//	ShaderPass* shaderPass,
+	//	int stride, int noAttributes, int attributeSize[],
+	//	bool useEbo);
+
+	float vertices[] = {
+		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+	};
+
+	int indices[] = { 0, 1, 2 };
+
+	int attributeSizes[] = { 3, 3 };
+
+	go->addComponent(
+		new Mesh(
+			vertices,
+			3,					//number of vertices
+			indices,
+			3,					
+			nullptr,			//shader pass
+			6,					//stride
+			2,					// number of attributes
+			attributeSizes,		//Size of each attribute
+			false              // use EBO
+		)
+	);
 	gameScene->addObject(go);
 
 	globalStart(gameScene);

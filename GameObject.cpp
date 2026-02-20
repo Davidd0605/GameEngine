@@ -36,7 +36,7 @@ void gameObject::render()
 		mesh->Draw();
 	}
 	else {
-		std::cout << "Tried rendering without mesh";
+		std::cerr << "Tried rendering without mesh";
 	}
 }
 
@@ -50,20 +50,13 @@ template<typename T> T* gameObject::getComponent() {
 	return nullptr;
 }
 
-//TODO
-template<typename T> T* gameObject::addComponent()
-{
-	return;
-	// Check if component already exists
-	if (getComponent<T>() != nullptr)
-	{
-		throw std::runtime_error("Component already exists on GameObject.");
+void gameObject::addComponent(Component* component) {
+	for (auto comp : components) {
+		if (typeid(*comp) == typeid(*component)) {
+			throw std::runtime_error("Component of this type");
+		}
 	}
-
-	T* newComponent = new T();
-	components.push_back(newComponent);
-
-	return newComponent;
+	components.push_back(component);
 }
 
 //TODO
