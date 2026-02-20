@@ -58,7 +58,13 @@ void gameObject::addComponent(Component* component) {
 	components.push_back(component);
 }
 
-//TODO
 template <typename T> T* gameObject::removeComponent() {
-	return;
+	for (auto it = components.begin(); it != components.end(); ++it) {
+		T* casted = dynamic_cast<T*>(*it);
+		if (casted != nullptr) {
+			components.erase(it);
+			return casted;
+		}
+	}
+	return nullptr;
 }
