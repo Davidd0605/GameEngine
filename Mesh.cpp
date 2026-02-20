@@ -21,8 +21,9 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
     vao = new VAO();
 
     vao->Bind();
-    vbo = new VBO(vertices, verticesBytes, verticesSize, GL_STATIC_DRAW, stride, noAttributes, attributeSize);
 
+    //Careful constructor BINDS and never unbinds the buffers
+    vbo = new VBO(vertices, verticesBytes, verticesSize, GL_STATIC_DRAW, stride, noAttributes, attributeSize);
     vao->Unbind();
     if (vbo) vbo->Unbind();
     if (ebo) ebo->Unbind();
@@ -35,9 +36,12 @@ void Mesh::Draw() {
     shaderPass->bind();
     vao->Bind();
     glDrawArrays(GL_TRIANGLES, 0, verticesSize);
+    vao->Unbind();
+    shaderPass->unbind();
 }
 
-void Mesh::start() {}
+void Mesh::start() {
+}
 void Mesh::update() {
 
     this->Draw();

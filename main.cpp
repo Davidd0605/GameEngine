@@ -102,14 +102,14 @@ int main() {
 		new Mesh(
 			vertices,
 			3,	//size in bytes of vertex data
-			sizeof(vertices),					//number of vertices
+			sizeof(vertices),
 			indices,
 			3,					
-			new ShaderPass("basic.frag", "basic.vert"),			//shader pass
-			6,					//stride
-			2,					// number of attributes
-			attributeSizes,		//Size of each attribute
-			false				// use EBO
+			new ShaderPass("basic.frag", "basic.vert"),
+			6,					
+			2,					
+			attributeSizes,		
+			false				
 		)
 	);
 	gameScene->addObject(go);
