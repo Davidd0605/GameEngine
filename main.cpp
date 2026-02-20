@@ -20,12 +20,19 @@
 GLFWwindow* window;
 float globalWidth, globalHeight;
 
+//Debugging:
+
+GLuint VAO, VBO;
+ShaderPass* sp;
+void schizo(float vertices[], int size);
+
+
+// Some utils
 void windowResize(GLFWwindow * window, int width, int height) {
 	globalWidth = width;
 	globalHeight = height;
 	glViewport(0, 0, globalWidth, globalHeight);
 }
-
 void setupGL(GLFWwindow* & window) {
 
 	glfwInit();
@@ -56,18 +63,17 @@ void setupGL(GLFWwindow* & window) {
 
 
 void globalStart(Scene* scene) {
+	sp = new ShaderPass("basic.frag", "basic.vert");
 	scene->start();
 }
 
 void globalUpdate(Scene* scene) {
-
-
 	while (!glfwWindowShouldClose(window)) {
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		scene->update();
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -79,39 +85,31 @@ void globalEnd(Scene* scene) {
 int main() {
 
 	setupGL(window);
+
 	//Create the game scene
 	GameScene* gameScene = new GameScene("Test game scene 1");
-
 	gameObject* go = new gameObject("Testicle");
 
-
-	//		Mesh(float vertices[], int verticesSize,
-	//int indices[], int indicesSize,
-	//	ShaderPass* shaderPass,
-	//	int stride, int noAttributes, int attributeSize[],
-	//	bool useEbo);
-
+	//Bootleg object with mesh componene
 	float vertices[] = {
 		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
 		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
 		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f
 	};
-
 	int indices[] = { 0, 1, 2 };
-
 	int attributeSizes[] = { 3, 3 };
-
 	go->addComponent(
 		new Mesh(
 			vertices,
-			3,					//number of vertices
+			3,	//size in bytes of vertex data
+			sizeof(vertices),					//number of vertices
 			indices,
 			3,					
-			nullptr,			//shader pass
+			new ShaderPass("basic.frag", "basic.vert"),			//shader pass
 			6,					//stride
 			2,					// number of attributes
 			attributeSizes,		//Size of each attribute
-			false              // use EBO
+			false				// use EBO
 		)
 	);
 	gameScene->addObject(go);

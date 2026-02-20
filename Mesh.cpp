@@ -1,62 +1,45 @@
 #include "Mesh.h"
 #include <iostream>
 
+Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
+    int indices[], int indicesSize,
+    ShaderPass* shaderPass,
+    int stride, int noAttributes, int attributeSize[],
+    bool useEbo) {
 
-Mesh::Mesh(float vertices[], int verticesSize,
-	int indices[], int indicesSize,
-	ShaderPass* shaderPass,
-	int stride, int noAttributes, int attributeSize[],
-	bool useEbo) {
+    this->useEbo = useEbo;
 
-	this->useEbo = useEbo;
+    this->shaderPass = shaderPass;
+    this->vertices = vertices;
+    this->indices = indices;
 
-	this->vertices = vertices;
-	this->indices = indices;
+    this->verticesSize = verticesSize;
+    this->indicesSize = indicesSize;
 
-	this->verticesSize = verticesSize;
-	this->indicesSize = indicesSize;
+    vbo = nullptr;
+    ebo = nullptr;
+    vao = new VAO();
 
-	vao = new VAO();
-	if (vertices == nullptr) {
-		std::cerr << "Error :: Mesh :: vertices array is null" << std::endl;
-	}
-	else {
-		vbo = new VBO(vertices, GL_STATIC_DRAW, stride, noAttributes, attributeSize);
-	}
+    vao->Bind();
+    vbo = new VBO(vertices, verticesBytes, verticesSize, GL_STATIC_DRAW, stride, noAttributes, attributeSize);
 
-	//TODO add EBO suport
-	if (indices == nullptr) {
-		std::cerr << "Error :: Mesh :: indices array is null" << std::endl;
-	}
-	else {
-		ebo = new EBO(indices, GL_STATIC_DRAW);
-	}
-
-	vao->Bind();
-	vbo->Bind();
-	//ebo->Bind(); when add EBO support
-	vao->Unbind();
+    vao->Unbind();
+    if (vbo) vbo->Unbind();
+    if (ebo) ebo->Unbind();
+    
 }
 
 void Mesh::Draw() {
-	vao->Bind();
+    if (shaderPass == nullptr || vao == nullptr) return;
 
-	//For EBO support
-	//glDrawElements(GL_TRIANGLES, verticesSize, GL_UNSIGNED_INT, 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, verticesSize);
-	vao->Unbind();
+    shaderPass->bind();
+    vao->Bind();
+    glDrawArrays(GL_TRIANGLES, 0, verticesSize);
 }
 
-
-void Mesh::start() {
-	return;
-}
-
+void Mesh::start() {}
 void Mesh::update() {
-	return;
-}
 
-void Mesh::end() {
-	return;
+    this->Draw();
 }
+void Mesh::end() {}

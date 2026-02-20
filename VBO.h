@@ -1,7 +1,6 @@
 #ifndef VBO_H
 #define VBO_H
 
-//#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 /// <summary>
@@ -14,7 +13,8 @@ class VBO
 {
 public:
 	GLuint ID;
-	VBO(float vertices[], GLenum drawType, int stride, int noAttributes, int attributeSize[]);
+	// now take verticesSize (count of floats)
+	VBO(float vertices[], int sizeofVertices, int verticesSize, GLenum drawType, int stride, int noAttributes, int attributeSize[]);
 	void Bind();
 	void Unbind();
 	void Delete();

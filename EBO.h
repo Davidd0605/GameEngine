@@ -1,4 +1,6 @@
 #pragma once
+
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 /// <summary>
 /// Element Buffer Object class

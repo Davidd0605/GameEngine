@@ -16,6 +16,24 @@
     <Filter Include="Source Files\Shaders">
       <UniqueIdentifier>{7f1a31c8-04bf-42af-83f5-7ef00dfd3db8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GPU Objects">
+      <UniqueIdentifier>{b21f57df-3fa2-4703-9e54-68b1f89170e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GPU Objects">
+      <UniqueIdentifier>{9db014e1-eeca-43d0-9b11-15b8a155530a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Engine elements">
+      <UniqueIdentifier>{fe14fc12-16f1-4a3a-b96c-0ac993e348bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Engine elements\Components">
+      <UniqueIdentifier>{a905ca2d-7569-4c43-b3ef-78f0c83dd7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Engine elements\General">
+      <UniqueIdentifier>{90fd70d4-e1c9-405e-a202-05015a6ae612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Engine elements\Functionalities">
+      <UniqueIdentifier>{242abe82-9e41-4131-a4b0-a836d233909e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -24,35 +42,35 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VBO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EBO.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
     <ClCompile Include="VAO.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GPU Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="VBO.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Source Files\Game Engine elements\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Game Engine elements\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Game Engine elements\General</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Game Engine elements\General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files\Game Engine elements\General</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderPass.cpp">
+      <Filter>Source Files\Game Engine elements\General</Filter>
     </ClCompile>
     <ClCompile Include="GameScene.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Game Engine elements\General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,17 +92,25 @@
     <ClInclude Include="ShaderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VAO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EBO.h">
+      <Filter>Header Files\GPU Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="VAO.h">
+      <Filter>Header Files\GPU Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="VBO.h">
+      <Filter>Header Files\GPU Objects</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="basic.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="basic.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

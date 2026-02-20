@@ -13,7 +13,7 @@
 
 class Mesh : public Component {
 public:
-    Mesh(float vertices[], int verticesSize,
+    Mesh(float vertices[], int sizeofVertices, int verticesSize,
          int indices[], int indicesSize,
          ShaderPass* shaderPass,
          int stride, int noAttributes, int attributeSize[],
@@ -40,6 +40,8 @@ private :
 
     int* indices;
     int indicesSize;
+
+    ShaderPass* shaderPass;
 };
 
 #endif

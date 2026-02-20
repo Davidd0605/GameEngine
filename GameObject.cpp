@@ -14,7 +14,6 @@ void gameObject::start() {
 }
 
 void gameObject::update() {
-	this->render();
 	for (auto component : components) {
 		component->update();
 	}
