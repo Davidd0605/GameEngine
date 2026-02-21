@@ -1,9 +1,16 @@
 #include "EBO.h"
 
 EBO::EBO(int indices[], int size) {
-	glGenBuffers(1, &ID);
+	
 	this->indices = indices;
 	this->size = size;
+
+	glGenBuffers(1, &ID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(int), indices, GL_STATIC_DRAW);
+
+
 }
 
 void EBO::Bind() {

@@ -5,8 +5,8 @@
 class Component
 {
 public:
-    virtual ~Component() = default;   // polymorphic type
-    virtual void start() {}          // default no-op implementations
+    virtual ~Component() = default;  
+    virtual void start() {}          
     virtual void update() {}
     virtual void end() {}
 };

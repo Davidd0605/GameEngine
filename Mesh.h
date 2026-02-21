@@ -16,17 +16,18 @@ public:
     Mesh(float vertices[], int sizeofVertices, int verticesSize,
          int indices[], int indicesSize,
          ShaderPass* shaderPass,
-         int stride, int noAttributes, int attributeSize[],
-         bool useEbo);
+         int stride, int noAttributes, int attributeSize[]);
 
-    virtual void Draw(); // allow for polymorphism in case of other mesh types in the future
+    Mesh(float vertices[], int sizeofVertices, int verticesSize,
+         ShaderPass* shaderPass,
+		 int stride, int noAttributes, int attributeSize[]);
 
-    // Component lifecycle overrides
+    virtual void Draw();
+
     void start() override;
     void update() override;
     void end() override;
 
-    bool useEbo;
 private :
 
     //GPU buffer objects

@@ -20,11 +20,6 @@
 GLFWwindow* window;
 float globalWidth, globalHeight;
 
-//Debugging:
-
-GLuint VAO, VBO;
-ShaderPass* sp;
-void schizo(float vertices[], int size);
 
 
 // Some utils
@@ -63,7 +58,6 @@ void setupGL(GLFWwindow* & window) {
 
 
 void globalStart(Scene* scene) {
-	sp = new ShaderPass("basic.frag", "basic.vert");
 	scene->start();
 }
 
@@ -98,18 +92,16 @@ int main() {
 	};
 	int indices[] = { 0, 1, 2 };
 	int attributeSizes[] = { 3, 3 };
+
 	go->addComponent(
 		new Mesh(
 			vertices,
 			3,	//size in bytes of vertex data
-			sizeof(vertices),
-			indices,
-			3,					
+			sizeof(vertices),					
 			new ShaderPass("basic.frag", "basic.vert"),
 			6,					
 			2,					
-			attributeSizes,		
-			false				
+			attributeSizes			
 		)
 	);
 	gameScene->addObject(go);

@@ -14,6 +14,8 @@ class GameScene : public Scene
 
 public:
 	void addObject(gameObject* go);
+	void removeObject(gameObject* go);
+	std::vector<gameObject*> getGameObjects();
 private:
 	std::vector<gameObject*> gameObjects;
 };
