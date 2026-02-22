@@ -4,7 +4,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <Windows.h>
+#include <shellscalingapi.h>
+#pragma comment(lib, "Shcore.lib")
 //GLM headers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -35,8 +37,11 @@ void setupGL(GLFWwindow* & window) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 
-	globalHeight = globalWidth = 600;
+	globalWidth = GetSystemMetrics(SM_CXSCREEN);
+	globalHeight = GetSystemMetrics(SM_CYSCREEN);
+
 	window = glfwCreateWindow(globalWidth, globalHeight, "David engine", NULL, NULL);
 
 
@@ -78,34 +83,49 @@ void globalEnd(Scene* scene) {
 }
 int main() {
 
+	//Adapt to screen DPI
+
+
 	setupGL(window);
 
-	//Create the game scene
+	
+	//Temporary create objects here, will be moved to a scene loader later
 	GameScene* gameScene = new GameScene("Test game scene 1");
 	gameObject* go = new gameObject("Testicle");
 
 	//Bootleg object with mesh componene
 	float vertices[] = {
-		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
 		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f
-	};
-	int indices[] = { 0, 1, 2 };
-	int attributeSizes[] = { 3, 3 };
+		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
+		 0.5f,	0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		 -0.5f, 0.5f, 0.0f,  0.0f, 0.0f, 1.0f
 
+
+	};
+	int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+	int attributeSizes[] = { 3, 3 };
+	
+
+	//Mesh with EBO test
 	go->addComponent(
 		new Mesh(
 			vertices,
 			3,	//size in bytes of vertex data
-			sizeof(vertices),					
+			sizeof(vertices),
+			indices,
+			6,
 			new ShaderPass("basic.frag", "basic.vert"),
-			6,					
-			2,					
-			attributeSizes			
+			6,
+			2,
+			attributeSizes
 		)
 	);
 	gameScene->addObject(go);
 
+	//Start the game loop
 	globalStart(gameScene);
 	globalUpdate(gameScene);
 	globalEnd(gameScene);

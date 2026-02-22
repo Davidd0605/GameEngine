@@ -11,6 +11,17 @@
 
 #include <iostream>
 
+
+/// <summary>
+/// Class for the mesh componenet.
+/// Responsible for storing vertex and index data, as well as the shader pass to be used for rendering the mesh.
+/// Also responsible for creating the VBO, EBO and VAO objects and configuring them correctly.
+/// Draws the mesh using the shader pass and the vertex and index data stored in the GPU memory.
+/// The mesh component can be used to render any kind of mesh, as long as the vertex and index 
+/// data is provided in the correct format and the shader pass is compatible with the vertex attributes.
+/// 
+/// May be used as a component of a game object.
+/// </summary>
 class Mesh : public Component {
 public:
     Mesh(float vertices[], int sizeofVertices, int verticesSize,

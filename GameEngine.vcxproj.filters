@@ -16,9 +16,6 @@
     <Filter Include="Source Files\Shaders">
       <UniqueIdentifier>{7f1a31c8-04bf-42af-83f5-7ef00dfd3db8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\GPU Objects">
-      <UniqueIdentifier>{b21f57df-3fa2-4703-9e54-68b1f89170e8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\GPU Objects">
       <UniqueIdentifier>{9db014e1-eeca-43d0-9b11-15b8a155530a}</UniqueIdentifier>
     </Filter>
@@ -96,13 +93,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EBO.h">
-      <Filter>Header Files\GPU Objects</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VAO.h">
-      <Filter>Header Files\GPU Objects</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VBO.h">
-      <Filter>Header Files\GPU Objects</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

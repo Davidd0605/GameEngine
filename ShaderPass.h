@@ -8,6 +8,11 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
+/// <summary>
+/// Class for the shader pass.
+/// Responsible for storing the shader program ID, as well as the paths to the vertex, fragment and geometry shaders.
+/// </summary>
 class ShaderPass {
 
 public:

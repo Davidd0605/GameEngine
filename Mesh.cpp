@@ -58,6 +58,7 @@ void Mesh::Draw() {
     if (shaderPass == nullptr || vao == nullptr) return;
 
     shaderPass->bind();
+    shaderPass->setFloat("time", glfwGetTime());
     vao->Bind();
 
     if(ebo) {

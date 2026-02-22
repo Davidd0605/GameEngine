@@ -3,13 +3,12 @@
 	
 #include <string>
 
+/// <summary>
+/// Abstract class for the scene.
+/// </summary>
 class Scene {
 
 	public:
-		//array of objects in the scene
-		//systems in the scene
-
-
 		Scene(std::string name);
 
 		//Must be overriden

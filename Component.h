@@ -1,7 +1,9 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-// Base class for all components. Make it polymorphic so dynamic_cast works.
+/// <summary>
+/// Base class for all components in the game engine.
+/// </summary>
 class Component
 {
 public:
