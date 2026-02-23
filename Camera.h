@@ -1,4 +1,5 @@
 #pragma once
+#include <glm/glm.hpp>
 
 /// <summary>
 /// Class for camera obejct. 
@@ -8,5 +9,22 @@
 /// </summary>
 class Camera
 {
+public:
+	Camera();
+
+	glm::mat4 getVPMatrix();
+private:
+	glm::mat4 viewMatrix;
+	glm::mat4 projectionMatrix;
+	glm::vec3 position;
+	glm::vec3 target;
+
+	float nearPlane;
+	float farPlane;
+
+	float fieldOfView;
+	float aspectRatio;
+
+
 };
 

@@ -93,33 +93,58 @@ int main() {
 	GameScene* gameScene = new GameScene("Test game scene 1");
 	gameObject* go = new gameObject("Testicle");
 
-	//Bootleg object with mesh componene
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
-		 0.5f,	0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		 -0.5f, 0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+		// Front face
+		-0.5f, -0.5f,  0.5f,  // 0
+		 0.5f, -0.5f,  0.5f,  // 1
+		 0.5f,  0.5f,  0.5f,  // 2
+		-0.5f,  0.5f,  0.5f,  // 3
 
-
+		// Back face
+		-0.5f, -0.5f, -0.5f,  // 4
+		 0.5f, -0.5f, -0.5f,  // 5
+		 0.5f,  0.5f, -0.5f,  // 6
+		-0.5f,  0.5f, -0.5f   // 7
 	};
 	int indices[] = {
+		// Front
 		0, 1, 2,
-		2, 3, 0
+		2, 3, 0,
+
+		// Right
+		1, 5, 6,
+		6, 2, 1,
+
+		// Back
+		5, 4, 7,
+		7, 6, 5,
+
+		// Left
+		4, 0, 3,
+		3, 7, 4,
+
+		// Top
+		3, 2, 6,
+		6, 7, 3,
+
+		// Bottom
+		4, 5, 1,
+		1, 0, 4
 	};
-	int attributeSizes[] = { 3, 3 };
+	int attributeSizes[] = { 3};
 	
 
 	//Mesh with EBO test
 	go->addComponent(
 		new Mesh(
 			vertices,
-			3,	//size in bytes of vertex data
+			3,
 			sizeof(vertices),
 			indices,
-			6,
+			36,
 			new ShaderPass("basic.frag", "basic.vert"),
-			6,
-			2,
+			3,
+			1,
 			attributeSizes
 		)
 	);

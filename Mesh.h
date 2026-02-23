@@ -33,8 +33,8 @@ public:
          ShaderPass* shaderPass,
 		 int stride, int noAttributes, int attributeSize[]);
 
-    virtual void Draw();
-
+    void Draw();
+	ShaderPass* getShaderPass();
     void start() override;
     void update() override;
     void end() override;

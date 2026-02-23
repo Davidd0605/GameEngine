@@ -59,6 +59,18 @@ void Mesh::Draw() {
 
     shaderPass->bind();
     shaderPass->setFloat("time", glfwGetTime());
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
+	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 view = glm::mat4(1.0f);
+
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
+
+	shaderPass->setMatrix4("model", model);
+	shaderPass->setMatrix4("view", view);
+	shaderPass->setMatrix4("projection", projection);
     vao->Bind();
 
     if(ebo) {
@@ -71,6 +83,10 @@ void Mesh::Draw() {
     shaderPass->unbind();
 }
 
+ShaderPass* Mesh::getShaderPass() {
+    return this->shaderPass;
+}
+ 
 void Mesh::start() {}
 void Mesh::update() {
 
