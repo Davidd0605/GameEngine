@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "Component.h"
-#include "Mesh.h"
+#include "../Components/Component.h"
+#include "../Components/Mesh.h"
 
 /// <summary>
 /// Class for the game object.

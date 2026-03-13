@@ -54,6 +54,8 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
 
 }
 
+
+//To be removed
 void Mesh::Draw() {
     if (shaderPass == nullptr || vao == nullptr) return;
 
@@ -86,10 +88,11 @@ void Mesh::Draw() {
 ShaderPass* Mesh::getShaderPass() {
     return this->shaderPass;
 }
- 
+VAO* Mesh::getVAO() {
+    return this->vao;
+}
+
 void Mesh::start() {}
 void Mesh::update() {
-
-    this->Draw();
 }
 void Mesh::end() {}

@@ -31,83 +31,104 @@
     <Filter Include="Source Files\Game Engine elements\Functionalities">
       <UniqueIdentifier>{242abe82-9e41-4131-a4b0-a836d233909e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game Engine elements\Systems">
+      <UniqueIdentifier>{c47564ae-eba4-4f2f-a45f-b75a35cc593d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Engine elements\Scenes">
+      <UniqueIdentifier>{4251ba48-e20b-4409-9c59-03c5338fbcc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Engine elements\GameObjects">
+      <UniqueIdentifier>{a285b891-a025-4615-ac1d-a71443cbcec2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EBO.cpp">
-      <Filter>Source Files\GPU Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="VAO.cpp">
-      <Filter>Source Files\GPU Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="VBO.cpp">
-      <Filter>Source Files\GPU Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
+    <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp">
       <Filter>Source Files\Game Engine elements\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
+    <ClCompile Include="src\GameEngineCore\Components\Transform.cpp">
       <Filter>Source Files\Game Engine elements\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\main.cpp">
       <Filter>Source Files\Game Engine elements\General</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Game Engine elements\General</Filter>
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VBO.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files\Game Engine elements\General</Filter>
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VAO.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderPass.cpp">
-      <Filter>Source Files\Game Engine elements\General</Filter>
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\EBO.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Source Files\Game Engine elements\General</Filter>
+    <ClCompile Include="src\GameEngineCore\Systems\RenderSystem.cpp">
+      <Filter>Source Files\Game Engine elements\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Scenes\Scene.cpp">
+      <Filter>Source Files\Game Engine elements\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Scenes\GameScene.cpp">
+      <Filter>Source Files\Game Engine elements\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Rendering\ShaderPass.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\GameObjects\GameObject.cpp">
+      <Filter>Source Files\Game Engine elements\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Rendering\Camera.cpp">
+      <Filter>Source Files\Game Engine elements\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VAO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="src\Shaders\basic.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="src\Shaders\basic.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="basic.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
+    <ClInclude Include="src\GameEngineCore\Components\Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Scenes\GameScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Scenes\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

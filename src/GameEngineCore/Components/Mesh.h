@@ -3,10 +3,10 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "ShaderPass.h"
-#include "VAO.h"
-#include "VBO.h"
-#include "EBO.h"
+#include "../Rendering/ShaderPass.h"
+#include "../Rendering/GPUobjects/VAO.h"
+#include "../Rendering/GPUobjects/VBO.h"
+#include "../Rendering/GPUobjects/EBO.h"
 #include "Component.h"
 
 #include <iostream>
@@ -35,6 +35,8 @@ public:
 
     void Draw();
 	ShaderPass* getShaderPass();
+    VAO* getVAO();
+
     void start() override;
     void update() override;
     void end() override;

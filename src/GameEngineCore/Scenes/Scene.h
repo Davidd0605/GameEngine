@@ -2,7 +2,7 @@
 #define SCENE_H
 	
 #include <string>
-
+#include "../Rendering/Camera.h"
 /// <summary>
 /// Abstract class for the scene.
 /// </summary>
@@ -10,6 +10,7 @@ class Scene {
 
 	public:
 		Scene(std::string name);
+		Scene(std::string name, Camera* mainCamera);
 
 		//Must be overriden
 		void virtual update() = 0;
@@ -17,6 +18,11 @@ class Scene {
 		void virtual end() = 0;
 
 		std::string name;
+
+		void setMainCamera(Camera* mainCamera);
+		Camera* getMainCamera();
+private:
+	Camera* mainCamera;
 };
 
 #endif // !SCENE_H

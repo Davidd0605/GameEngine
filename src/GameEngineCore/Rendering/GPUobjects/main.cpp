@@ -13,10 +13,10 @@
 #include <glm/gtc/type_ptr.hpp>	
 
 //Custom headers
-#include "Scene.h"
-#include "GameScene.h"
-#include "GameObject.h"
-
+#include "../../Scenes/Scene.h"
+#include "../../Scenes/GameScene.h"
+#include "../../GameObjects/GameObject.h"
+#include "../../Systems/RenderSystem.h"
 //Define macros here
 #define elif  else if
 GLFWwindow* window;
@@ -65,10 +65,9 @@ void setupGL(GLFWwindow* & window) {
 void globalStart(Scene* scene) {
 	scene->start();
 }
-
 void globalUpdate(Scene* scene) {
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(1, 1,1, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		scene->update();
@@ -77,21 +76,18 @@ void globalUpdate(Scene* scene) {
 		glfwPollEvents();
 	}
 }
-
 void globalEnd(Scene* scene) {
 	scene->end();
 }
+
 int main() {
-
-	//Adapt to screen DPI
-
-
+	
 	setupGL(window);
 
 	
 	//Temporary create objects here, will be moved to a scene loader later
 	GameScene* gameScene = new GameScene("Test game scene 1");
-	gameObject* go = new gameObject("Testicle");
+	
 
 	float vertices[] = {
 		// Front face
@@ -133,8 +129,7 @@ int main() {
 	};
 	int attributeSizes[] = { 3};
 	
-
-	//Mesh with EBO test
+	gameObject* go = new gameObject("Testicle");
 	go->addComponent(
 		new Mesh(
 			vertices,
@@ -142,14 +137,16 @@ int main() {
 			sizeof(vertices),
 			indices,
 			36,
-			new ShaderPass("basic.frag", "basic.vert"),
+			new ShaderPass("src/Shaders/basic.frag", "src/Shaders/basic.vert"),
 			3,
 			1,
 			attributeSizes
 		)
 	);
-	gameScene->addObject(go);
 
+	//Add objects to scene
+	gameScene->addObject(go);
+	gameScene->addSystem(new RenderSystem());
 	//Start the game loop
 	globalStart(gameScene);
 	globalUpdate(gameScene);
