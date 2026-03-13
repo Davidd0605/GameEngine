@@ -3,9 +3,16 @@
 
 #include <string>
 #include <vector>
-#include "Component.h"
-#include "Mesh.h"
+#include "../Components/Component.h"
+#include "../Components/Mesh.h"
 
+/// <summary>
+/// Class for the game object.
+/// Responsible for storing the name of the game object, as well as its components, functionalities and children.
+/// 
+/// The game object can be used to represent any kind of object in the game, such as a player, an enemy, a projectile, etc.
+/// In order to avoid excessive complexity introduced by inheritance, the GO system makes use of the decorator pattern via composition.
+/// </summary>
 class gameObject {
 
 public:

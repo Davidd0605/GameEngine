@@ -4,27 +4,24 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <Windows.h>
+#include <shellscalingapi.h>
+#pragma comment(lib, "Shcore.lib")
 //GLM headers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>	
 
 //Custom headers
-#include "Scene.h"
-#include "GameScene.h"
-#include "GameObject.h"
-
+#include "../../Scenes/Scene.h"
+#include "../../Scenes/GameScene.h"
+#include "../../GameObjects/GameObject.h"
+#include "../../Systems/RenderSystem.h"
 //Define macros here
 #define elif  else if
 GLFWwindow* window;
 float globalWidth, globalHeight;
 
-//Debugging:
-
-GLuint VAO, VBO;
-ShaderPass* sp;
-void schizo(float vertices[], int size);
 
 
 // Some utils
@@ -40,8 +37,11 @@ void setupGL(GLFWwindow* & window) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 
-	globalHeight = globalWidth = 600;
+	globalWidth = GetSystemMetrics(SM_CXSCREEN);
+	globalHeight = GetSystemMetrics(SM_CYSCREEN);
+
 	window = glfwCreateWindow(globalWidth, globalHeight, "David engine", NULL, NULL);
 
 
@@ -63,13 +63,11 @@ void setupGL(GLFWwindow* & window) {
 
 
 void globalStart(Scene* scene) {
-	sp = new ShaderPass("basic.frag", "basic.vert");
 	scene->start();
 }
-
 void globalUpdate(Scene* scene) {
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(1, 1,1, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		scene->update();
@@ -78,42 +76,78 @@ void globalUpdate(Scene* scene) {
 		glfwPollEvents();
 	}
 }
-
 void globalEnd(Scene* scene) {
 	scene->end();
 }
-int main() {
 
+int main() {
+	
 	setupGL(window);
 
-	//Create the game scene
+	
+	//Temporary create objects here, will be moved to a scene loader later
 	GameScene* gameScene = new GameScene("Test game scene 1");
-	gameObject* go = new gameObject("Testicle");
+	
 
-	//Bootleg object with mesh componene
 	float vertices[] = {
-		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+		// Front face
+		-0.5f, -0.5f,  0.5f,  // 0
+		 0.5f, -0.5f,  0.5f,  // 1
+		 0.5f,  0.5f,  0.5f,  // 2
+		-0.5f,  0.5f,  0.5f,  // 3
+
+		// Back face
+		-0.5f, -0.5f, -0.5f,  // 4
+		 0.5f, -0.5f, -0.5f,  // 5
+		 0.5f,  0.5f, -0.5f,  // 6
+		-0.5f,  0.5f, -0.5f   // 7
 	};
-	int indices[] = { 0, 1, 2 };
-	int attributeSizes[] = { 3, 3 };
+	int indices[] = {
+		// Front
+		0, 1, 2,
+		2, 3, 0,
+
+		// Right
+		1, 5, 6,
+		6, 2, 1,
+
+		// Back
+		5, 4, 7,
+		7, 6, 5,
+
+		// Left
+		4, 0, 3,
+		3, 7, 4,
+
+		// Top
+		3, 2, 6,
+		6, 7, 3,
+
+		// Bottom
+		4, 5, 1,
+		1, 0, 4
+	};
+	int attributeSizes[] = { 3};
+	
+	gameObject* go = new gameObject("Testicle");
 	go->addComponent(
 		new Mesh(
 			vertices,
-			3,	//size in bytes of vertex data
-			sizeof(vertices),					//number of vertices
+			3,
+			sizeof(vertices),
 			indices,
-			3,					
-			new ShaderPass("basic.frag", "basic.vert"),			//shader pass
-			6,					//stride
-			2,					// number of attributes
-			attributeSizes,		//Size of each attribute
-			false				// use EBO
+			36,
+			new ShaderPass("src/Shaders/basic.frag", "src/Shaders/basic.vert"),
+			3,
+			1,
+			attributeSizes
 		)
 	);
-	gameScene->addObject(go);
 
+	//Add objects to scene
+	gameScene->addObject(go);
+	gameScene->addSystem(new RenderSystem());
+	//Start the game loop
 	globalStart(gameScene);
 	globalUpdate(gameScene);
 	globalEnd(gameScene);

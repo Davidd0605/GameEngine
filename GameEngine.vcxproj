@@ -133,34 +133,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="EBO.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ShaderPass.cpp" />
-    <ClCompile Include="VAO.cpp" />
-    <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp" />
+    <ClCompile Include="src\GameEngineCore\Components\Transform.cpp" />
+    <ClCompile Include="src\GameEngineCore\GameObjects\GameObject.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\Camera.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\EBO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\main.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VAO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VBO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\ShaderPass.cpp" />
+    <ClCompile Include="src\GameEngineCore\Scenes\GameScene.cpp" />
+    <ClCompile Include="src\GameEngineCore\Scenes\Scene.cpp" />
+    <ClCompile Include="src\GameEngineCore\Systems\RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="EBO.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameScene.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="ShaderPass.h" />
-    <ClInclude Include="VAO.h" />
-    <ClInclude Include="VBO.h" />
+    <None Include="src\Shaders\basic.frag" />
+    <None Include="src\Shaders\basic.vert" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.frag" />
-    <None Include="basic.vert" />
+    <ClInclude Include="src\GameEngineCore\Components\Component.h" />
+    <ClInclude Include="src\GameEngineCore\Components\Mesh.h" />
+    <ClInclude Include="src\GameEngineCore\Components\Transform.h" />
+    <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\Camera.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h" />
+    <ClInclude Include="src\GameEngineCore\Scenes\GameScene.h" />
+    <ClInclude Include="src\GameEngineCore\Scenes\Scene.h" />
+    <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h" />
+    <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
