@@ -27,7 +27,14 @@ void RenderSystem::draw() {
 
 		sp->bind();
 		vao->Bind();
-		Transform* ts = go->getComponent<Transform>();
+
+		auto& textures = ms->getTextures();
+		for (int i = 0; i < (int)textures.size(); i++) {
+			textures[i]->bind(i);
+			sp->setInt("tex" + std::to_string(i), i);
+		}
+
+		
 
 		//Default behavior
 		glm::mat4 model = glm::mat4(1);
@@ -37,17 +44,18 @@ void RenderSystem::draw() {
 		
 		gameObject* camera = currentScene->getMainCamera();
 		if (camera == nullptr) {
-			std::cerr << "ERROR :: ATTEMPTING TO RENDER WITHOUT MAIN CAMERA; \n";
+			std::cerr << "[RenderSystem] ERROR :: ATTEMPTING TO RENDER WITHOUT MAIN CAMERA; \n";
 		}
 		else {
 			VP = camera->getComponent<Camera>()->getVPMatrix();
 		}
-		
+
+		Transform* ts = go->getComponent<Transform>();
 		if (ts != nullptr) {
 			model = ts->getModel();
 		}
 		else {
-			std::cerr << "ERROR :: NO TRANSFORM COMPONENT FOUND WHEN ATTEMPTING TO DRAW GAMEOBEJCT: " << go->name << " USING DEFAULT BEHAVIOR;\n";
+			std::cerr << "[RenderSystem] ERROR :: NO TRANSFORM COMPONENT FOUND WHEN ATTEMPTING TO DRAW GAMEOBEJCT: " << go->name << " USING DEFAULT BEHAVIOR;\n";
 			model = glm::mat4(1);
 		}
 
@@ -55,9 +63,7 @@ void RenderSystem::draw() {
 		sp->setMatrix4("model", model);
 		sp->setMatrix4("VP", VP);
 
-		EBO* ebo = ms->getEBO();
-		if (ebo) ms->drawEBO();
-		else ms->draw();
+		ms->draw();
 
 		sp->unbind();
 		vao->Unbind();

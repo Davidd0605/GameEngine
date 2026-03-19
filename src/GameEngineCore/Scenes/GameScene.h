@@ -18,6 +18,7 @@ public:
 	using Scene::setMainCamera;
 	using Scene::getMainCamera;
 
+	void fixedUpdate();
 	void update();
 	void start();
 	void end();

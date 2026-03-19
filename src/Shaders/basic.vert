@@ -1,18 +1,17 @@
 #version 330 core
-layout (location = 0) in vec3 aPos; // position has attribute position 0
-layout (location = 1) in vec3 aCol; // position has attribute position 0
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aCol;
+layout (location = 2) in vec2 aTexCoord;
 
 uniform float time;
 uniform mat4 model;
 uniform mat4 VP;
 
+out vec4 vertexColor;
+out vec2 texCoord;
 
-out vec4 vertexColor; // specify a color output to the fragment shader
-
-
-void main()
-{
-	gl_Position = VP * model * vec4(aPos, 1.0); // we give a vec3 to vec4’s constructor
-	vertexColor = vec4(1, 1, 1, 
-		1.0);
+void main() {
+    gl_Position = VP * model * vec4(aPos, 1.0);
+    vertexColor = vec4(aCol, 1.0);
+    texCoord = aTexCoord;
 }

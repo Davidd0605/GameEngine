@@ -3,55 +3,61 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <vector>
+#include <string>
 #include "../Rendering/ShaderPass.h"
 #include "../Rendering/GPUobjects/VAO.h"
 #include "../Rendering/GPUobjects/VBO.h"
 #include "../Rendering/GPUobjects/EBO.h"
+#include "../Rendering/Texture.h"
 #include "Component.h"
-
 #include <iostream>
 
-
 /// <summary>
-/// Class for the mesh componenet.
-/// Responsible for storing vertex and index data, as well as the shader pass to be used for rendering the mesh.
-/// Also responsible for creating the VBO, EBO and VAO objects and configuring them correctly.
-/// Draws the mesh using the shader pass and the vertex and index data stored in the GPU memory.
-/// The mesh component can be used to render any kind of mesh, as long as the vertex and index 
-/// data is provided in the correct format and the shader pass is compatible with the vertex attributes.
-/// 
-/// May be used as a component of a game object.
+/// Mesh component.
+/// Stores vertex/index data, shader and a list of textures.
+/// Textures can be passed as paths at construction or added after via addTexture().
+/// RenderSystem handles binding and drawing.
 /// </summary>
 class Mesh : public Component {
 public:
+    // With indices
     Mesh(float vertices[], int sizeofVertices, int verticesSize,
-         int indices[], int indicesSize,
-         ShaderPass* shaderPass,
-         int stride, int noAttributes, int attributeSize[]);
+        int indices[], int indicesSize,
+        ShaderPass* shaderPass,
+        int stride, int noAttributes, int attributeSize[],
+        std::vector<std::string> texturePaths = {});
 
+    // Without indices
     Mesh(float vertices[], int sizeofVertices, int verticesSize,
-         ShaderPass* shaderPass,
-		 int stride, int noAttributes, int attributeSize[]);
+        ShaderPass* shaderPass,
+        int stride, int noAttributes, int attributeSize[],
+        std::vector<std::string> texturePaths = {});
 
-	ShaderPass* getShaderPass();
+    // Textures
+    void addTexture(const std::string& path);
+    void addTexture(Texture* texture);
+    std::vector<Texture*>& getTextures();
+    void bindTextures() const;
+
+    void draw();
+
+    ShaderPass* getShaderPass();
     VAO* getVAO();
     VBO* getVBO();
     EBO* getEBO();
 
-    void drawEBO();
-    void draw();
     void start() override;
     void update() override;
     void end() override;
 
-private :
-
-    //GPU buffer objects
+private:
     EBO* ebo;
     VBO* vbo;
     VAO* vao;
 
-    //Mesh data
+    std::vector<Texture*> textures;
+
     float* vertices;
     int verticesSize;
 
@@ -62,4 +68,3 @@ private :
 };
 
 #endif
-

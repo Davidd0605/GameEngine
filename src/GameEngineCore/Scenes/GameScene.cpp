@@ -11,7 +11,7 @@ void GameScene::update()
 		sy->update();
 	}
 }
-
+void GameScene::fixedUpdate(){}
 void GameScene::start()
 {
 	for (auto go : gameObjects) {

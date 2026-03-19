@@ -2,7 +2,8 @@
 #define SCENE_H
 	
 #include <string>
-#include "../Rendering/Camera.h"
+#include "../Components/Camera.h"
+#include "../GameObjects/GameObject.h"
 /// <summary>
 /// Abstract class for the scene.
 /// </summary>
@@ -16,6 +17,7 @@ class Scene {
 		void virtual update() = 0;
 		void virtual start() = 0;
 		void virtual end() = 0;
+		void virtual fixedUpdate() = 0;
 
 		std::string name;
 
