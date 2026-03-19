@@ -16,7 +16,7 @@ public:
     void setRotationX(float x);
     void setRotationY(float y);
     void setRotationZ(float z);
-
+    void translate(glm::vec3 translation);
     glm::mat4 getModel();
     glm::vec3 getPosition();
     glm::vec3 getForward();

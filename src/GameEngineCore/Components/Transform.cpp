@@ -1,5 +1,4 @@
 #include "Transform.h"
-#include <GLFW/glfw3.h>
 Transform::Transform() {
     this->position = glm::vec3(0.0f);
     this->rotation = glm::vec3(0.0f);
@@ -60,6 +59,11 @@ void Transform::computeModel() {
     model = glm::rotate(model, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::rotate(model, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::scale(model, scale);
+}
+
+void Transform::translate(glm::vec3 translation) {
+    position += translation;
+    computeModel();
 }
 
 void Transform::start() {}

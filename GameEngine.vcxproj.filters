@@ -40,6 +40,9 @@
     <Filter Include="Source Files\Game Engine elements\GameObjects">
       <UniqueIdentifier>{a285b891-a025-4615-ac1d-a71443cbcec2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game Engine elements\Utilities">
+      <UniqueIdentifier>{60c59170-4090-4166-8cf7-27467dad324d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -50,9 +53,6 @@
     </ClCompile>
     <ClCompile Include="src\GameEngineCore\Components\Transform.cpp">
       <Filter>Source Files\Game Engine elements\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\main.cpp">
-      <Filter>Source Files\Game Engine elements\General</Filter>
     </ClCompile>
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VBO.cpp">
       <Filter>Source Files\GPU Objects</Filter>
@@ -78,8 +78,23 @@
     <ClCompile Include="src\GameEngineCore\GameObjects\GameObject.cpp">
       <Filter>Source Files\Game Engine elements\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameEngineCore\Rendering\Camera.cpp">
-      <Filter>Source Files\Game Engine elements\GameObjects</Filter>
+    <ClCompile Include="stb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Utilities\Input.cpp">
+      <Filter>Source Files\Game Engine elements\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Utilities\Time.cpp">
+      <Filter>Source Files\Game Engine elements\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\main.cpp">
+      <Filter>Source Files\Game Engine elements\General</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Components\Camera.cpp">
+      <Filter>Source Files\Game Engine elements\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Rendering\Texture.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,9 +116,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h">
@@ -130,5 +142,28 @@
     <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Utilities\Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Utilities\Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="damian.jpeg">
+      <Filter>Source Files\Shaders</Filter>
+    </Image>
+    <Image Include="isreal.jpeg">
+      <Filter>Source Files\Shaders</Filter>
+    </Image>
+    <Image Include="gaypeace.jpeg">
+      <Filter>Source Files\Shaders</Filter>
+    </Image>
   </ItemGroup>
 </Project>
