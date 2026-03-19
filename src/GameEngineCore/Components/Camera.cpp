@@ -43,11 +43,19 @@ void Camera::recompute() {
         viewMatrix = glm::lookAt(position, position + forward, glm::vec3(0.0f, 1.0f, 0.0f));
     }
     else {
-        std::cerr << "ERROR :: CAMERA TRANSFORM NULL; \n";
-    }
+        std::cerr << "[Camera] ERROR :: CAMERA TRANSFORM NULL; \n";
+    } 
 }
 
 glm::mat4 Camera::getVPMatrix() {
     return projectionMatrix * viewMatrix;
 }
+void Camera::setFov(float fov) {
+    this->fov = glm::clamp(fov, 10.0f, 120.0f);
+    recompute();
+}
 
+float Camera::getFov() {
+    return fov;
+}
+void Camera::fixedUpdate() {}

@@ -96,3 +96,4 @@ EBO* Mesh::getEBO() { return this->ebo; }
 void Mesh::start() {}
 void Mesh::update() {}
 void Mesh::end() {}
+void Mesh::fixedUpdate() {}

@@ -18,6 +18,12 @@ void gameObject::update() {
 	}
 }
 
+void gameObject::fixedUpdate() {
+	for (auto component : components) {
+		component->fixedUpdate();
+	}
+}
+
 void gameObject::end() {
 	for (auto component : components) {
 		component->end();

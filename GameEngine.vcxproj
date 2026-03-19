@@ -160,6 +160,8 @@
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />
     <ClInclude Include="src\GameEngineCore\Components\Mesh.h" />
     <ClInclude Include="src\GameEngineCore\Components\Transform.h" />
+    <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h" />
+    <ClInclude Include="src\GameEngineCore\Functionalities\Functionality.h" />
     <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h" />
