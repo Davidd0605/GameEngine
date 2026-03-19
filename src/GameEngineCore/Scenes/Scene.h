@@ -10,7 +10,7 @@ class Scene {
 
 	public:
 		Scene(std::string name);
-		Scene(std::string name, Camera* mainCamera);
+		Scene(std::string name, gameObject* mainCamera);
 
 		//Must be overriden
 		void virtual update() = 0;
@@ -19,10 +19,10 @@ class Scene {
 
 		std::string name;
 
-		void setMainCamera(Camera* mainCamera);
-		Camera* getMainCamera();
+		void setMainCamera(gameObject* mainCamera);
+		gameObject* getMainCamera();
 private:
-	Camera* mainCamera;
+	gameObject* mainCamera;
 };
 
 #endif // !SCENE_H

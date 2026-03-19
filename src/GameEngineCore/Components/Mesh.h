@@ -33,10 +33,13 @@ public:
          ShaderPass* shaderPass,
 		 int stride, int noAttributes, int attributeSize[]);
 
-    void Draw();
 	ShaderPass* getShaderPass();
     VAO* getVAO();
+    VBO* getVBO();
+    EBO* getEBO();
 
+    void drawEBO();
+    void draw();
     void start() override;
     void update() override;
     void end() override;

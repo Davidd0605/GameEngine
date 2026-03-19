@@ -54,42 +54,26 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
 
 }
 
-
-//To be removed
-void Mesh::Draw() {
-    if (shaderPass == nullptr || vao == nullptr) return;
-
-    shaderPass->bind();
-    shaderPass->setFloat("time", glfwGetTime());
-
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
-	model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 0.0f));
-
-	glm::mat4 view = glm::mat4(1.0f);
-
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
-
-	shaderPass->setMatrix4("model", model);
-	shaderPass->setMatrix4("view", view);
-	shaderPass->setMatrix4("projection", projection);
-    vao->Bind();
-
-    if(ebo) {
-        glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
-    }
-    else {
-        glDrawArrays(GL_TRIANGLES, 0, verticesSize);
-    }
-    vao->Unbind();
-    shaderPass->unbind();
+void Mesh::drawEBO() {
+    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
 }
 
+void Mesh::draw() {
+    glDrawArrays(GL_TRIANGLES, 0, verticesSize);
+}
 ShaderPass* Mesh::getShaderPass() {
     return this->shaderPass;
 }
 VAO* Mesh::getVAO() {
     return this->vao;
+}
+
+VBO* Mesh::getVBO() {
+    return this->vbo;
+}
+
+EBO* Mesh::getEBO() {
+    return this->ebo;
 }
 
 void Mesh::start() {}

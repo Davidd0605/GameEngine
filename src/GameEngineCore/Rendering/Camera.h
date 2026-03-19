@@ -1,30 +1,34 @@
 #pragma once
 #include <glm/glm.hpp>
-
+#include <glm/gtc/matrix_transform.hpp>
+#include "../Components/Component.h"
+#include "../Components/Transform.h"
+#include "../GameObjects/GameObject.h"  
 /// <summary>
-/// Class for camera obejct. 
-/// Camera will be used to determine the view of the scene.
-/// It will be used to determine the position and orientation of the camera in the scene, 
-/// as well as the projection type (perspective or orthographic) and other parameters such as field of view and aspect ratio.
+/// Camera component.
+/// Reads position and forward vector from the Transform on the same game object.
 /// </summary>
-class Camera
-{
+class Camera : public Component {
 public:
-	Camera();
+    Camera(float fov, float aspectRatio, float nearPlane, float farPlane);
 
-	glm::mat4 getVPMatrix();
+    glm::mat4 getVPMatrix();
+    void setAspectRatio(float aspectRatio);
+
+    void start() override;
+    void update() override;
+    void end() override;
+
 private:
-	glm::mat4 viewMatrix;
-	glm::mat4 projectionMatrix;
-	glm::vec3 position;
-	glm::vec3 target;
+    void recompute();
 
-	float nearPlane;
-	float farPlane;
+    Transform* transform;
 
-	float fieldOfView;
-	float aspectRatio;
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
 
-
+    float nearPlane;
+    float farPlane;
+    float fov;
+    float aspectRatio;
 };
-

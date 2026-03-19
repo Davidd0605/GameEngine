@@ -3,12 +3,11 @@
 gameObject::gameObject(std::string name) {
 	this->name = name;
 }
+
 void gameObject::start() {
-	
 	for (auto component : components) {
 		component->start();
 	}
-
 	//TODO: start all children game objects
 	//TODO: start all functionalities
 }
@@ -19,52 +18,22 @@ void gameObject::update() {
 	}
 }
 
-void gameObject::end()
-{
+void gameObject::end() {
 	for (auto component : components) {
 		component->end();
 	}
 }
 
-void gameObject::render()
-{
-
-	//Check if we have a mesh to render
-	if (this->getComponent<Mesh>()) {
-		Mesh* mesh = this->getComponent<Mesh>();
-		mesh->Draw();
-	}
-	else {
-		std::cerr << "Tried rendering without mesh";
-	}
-}
-
-template<typename T> T* gameObject::getComponent() {
-	for (Component* comp : components) {
-		T* casted = dynamic_cast<T*>(comp); // is component of type T?
-		if (casted != nullptr) {
-			return casted;
-		}
-	}
-	return nullptr;
+void gameObject::render() {
+	// deprecated
 }
 
 void gameObject::addComponent(Component* component) {
 	for (auto comp : components) {
 		if (typeid(*comp) == typeid(*component)) {
-			throw std::runtime_error("Component of this type");
+			throw std::runtime_error("Component of this type already exists");
 		}
 	}
+	component->owner = this;
 	components.push_back(component);
-}
-
-template <typename T> T* gameObject::removeComponent() {
-	for (auto it = components.begin(); it != components.end(); ++it) {
-		T* casted = dynamic_cast<T*>(*it);
-		if (casted != nullptr) {
-			components.erase(it);
-			return casted;
-		}
-	}
-	return nullptr;
 }

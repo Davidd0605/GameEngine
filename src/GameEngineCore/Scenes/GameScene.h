@@ -13,6 +13,7 @@
 /// </summary>
 class GameScene : public Scene
 {
+public:
 	using Scene::Scene;
 	using Scene::setMainCamera;
 	using Scene::getMainCamera;
@@ -21,7 +22,7 @@ class GameScene : public Scene
 	void start();
 	void end();
 
-public:
+
 	void addObject(gameObject* go);
 	void removeObject(gameObject* go);
 
