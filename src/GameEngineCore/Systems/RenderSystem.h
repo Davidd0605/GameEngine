@@ -7,6 +7,7 @@
 #include "../Rendering/GPUobjects/VAO.h"
 #include "../Rendering/ShaderPass.h"
 #include "../Components/Mesh.h"
+#include "../Components/Transform.h"
 #include <vector>
 /// <summary>
 /// System responsible for drawing all meshes in a game scene

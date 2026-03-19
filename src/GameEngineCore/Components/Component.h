@@ -1,17 +1,16 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-/// <summary>
-/// Base class for all components in the game engine.
-/// </summary>
-class Component
-{
+class gameObject;
+
+class Component {
 public:
-    virtual ~Component() = default;  
-    virtual void start() {}          
+    virtual ~Component() = default;
+    virtual void start() {}
     virtual void update() {}
     virtual void end() {}
+
+    gameObject* owner = nullptr;
 };
 
 #endif // COMPONENT_H
-

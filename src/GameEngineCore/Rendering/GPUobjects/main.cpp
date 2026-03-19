@@ -17,124 +17,66 @@
 #include "../../Scenes/GameScene.h"
 #include "../../GameObjects/GameObject.h"
 #include "../../Systems/RenderSystem.h"
-//Define macros here
-#define elif  else if
+
+#define elif else if
+
 GLFWwindow* window;
 float globalWidth, globalHeight;
 
-
-
-// Some utils
-void windowResize(GLFWwindow * window, int width, int height) {
+void windowResize(GLFWwindow* window, int width, int height) {
 	globalWidth = width;
 	globalHeight = height;
 	glViewport(0, 0, globalWidth, globalHeight);
 }
-void setupGL(GLFWwindow* & window) {
 
+void setupGL(GLFWwindow*& window) {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
-
 	globalWidth = GetSystemMetrics(SM_CXSCREEN);
 	globalHeight = GetSystemMetrics(SM_CYSCREEN);
-
 	window = glfwCreateWindow(globalWidth, globalHeight, "David engine", NULL, NULL);
-
-
-	if (window == NULL)
-	{
+	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return;
 	}
 	glfwMakeContextCurrent(window);
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return;
 	}
 	glViewport(0, 0, globalWidth, globalHeight);
+	glEnable(GL_DEPTH_TEST);
 	glfwSetWindowSizeCallback(window, windowResize);
 }
 
+void globalStart(Scene* scene) { scene->start(); }
 
-void globalStart(Scene* scene) {
-	scene->start();
-}
 void globalUpdate(Scene* scene) {
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(1, 1,1, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		scene->update();
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 }
-void globalEnd(Scene* scene) {
-	scene->end();
-}
 
-int main() {
-	
-	setupGL(window);
+void globalEnd(Scene* scene) { scene->end(); }
 
-	
-	//Temporary create objects here, will be moved to a scene loader later
-	GameScene* gameScene = new GameScene("Test game scene 1");
-	
+gameObject* makeCube(float* vertices, int* indices, int attributeSizes[],
+	glm::vec3 position, glm::vec3 rotation, std::string name) {
 
-	float vertices[] = {
-		// Front face
-		-0.5f, -0.5f,  0.5f,  // 0
-		 0.5f, -0.5f,  0.5f,  // 1
-		 0.5f,  0.5f,  0.5f,  // 2
-		-0.5f,  0.5f,  0.5f,  // 3
-
-		// Back face
-		-0.5f, -0.5f, -0.5f,  // 4
-		 0.5f, -0.5f, -0.5f,  // 5
-		 0.5f,  0.5f, -0.5f,  // 6
-		-0.5f,  0.5f, -0.5f   // 7
-	};
-	int indices[] = {
-		// Front
-		0, 1, 2,
-		2, 3, 0,
-
-		// Right
-		1, 5, 6,
-		6, 2, 1,
-
-		// Back
-		5, 4, 7,
-		7, 6, 5,
-
-		// Left
-		4, 0, 3,
-		3, 7, 4,
-
-		// Top
-		3, 2, 6,
-		6, 7, 3,
-
-		// Bottom
-		4, 5, 1,
-		1, 0, 4
-	};
-	int attributeSizes[] = { 3};
-	
-	gameObject* go = new gameObject("Testicle");
+	gameObject* go = new gameObject(name);
+	go->addComponent(new Transform());
 	go->addComponent(
 		new Mesh(
 			vertices,
 			3,
-			sizeof(vertices),
+			sizeof(float) * 24,
 			indices,
 			36,
 			new ShaderPass("src/Shaders/basic.frag", "src/Shaders/basic.vert"),
@@ -143,11 +85,65 @@ int main() {
 			attributeSizes
 		)
 	);
+	go->getComponent<Transform>()->setPosition(position);
+	go->getComponent<Transform>()->setRotationX(rotation.x);
+	go->getComponent<Transform>()->setRotationY(rotation.y);
+	go->getComponent<Transform>()->setRotationZ(rotation.z);
+	return go;
+}
 
-	//Add objects to scene
-	gameScene->addObject(go);
+int main() {
+	setupGL(window);
+
+	GameScene* gameScene = new GameScene("Test game scene 1");
+
+	float vertices[] = {
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f
+	};
+	int indices[] = {
+		0, 1, 2, 2, 3, 0,
+		1, 5, 6, 6, 2, 1,
+		5, 4, 7, 7, 6, 5,
+		4, 0, 3, 3, 7, 4,
+		3, 2, 6, 6, 7, 3,
+		4, 5, 1, 1, 0, 4
+	};
+	int attributeSizes[] = { 3 };
+
+	// --- Cubes ---
+	gameScene->addObject(makeCube(vertices, indices, attributeSizes,
+		glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
+
+	gameScene->addObject(makeCube(vertices, indices, attributeSizes,
+		glm::vec3(-3.0f, 0.0f, -5.0f), glm::vec3(30.0f, 45.0f, 0.0f), "Cube_Left"));
+
+	gameScene->addObject(makeCube(vertices, indices, attributeSizes,
+		glm::vec3(3.0f, 0.0f, -5.0f), glm::vec3(-20.0f, 60.0f, 0.0f), "Cube_Right"));
+
+	gameScene->addObject(makeCube(vertices, indices, attributeSizes,
+		glm::vec3(0.0f, 2.5f, -7.0f), glm::vec3(45.0f, 15.0f, 0.0f), "Cube_Top"));
+
+	gameScene->addObject(makeCube(vertices, indices, attributeSizes,
+		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
+
+	// --- Camera ---
+	gameObject* cameraGO = new gameObject("MainCamera");
+	cameraGO->addComponent(new Transform());
+	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f));
+	cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+
+	// --- Scene setup ---
+	gameScene->addObject(cameraGO);
+	gameScene->setMainCamera(cameraGO);
 	gameScene->addSystem(new RenderSystem());
-	//Start the game loop
+
 	globalStart(gameScene);
 	globalUpdate(gameScene);
 	globalEnd(gameScene);
