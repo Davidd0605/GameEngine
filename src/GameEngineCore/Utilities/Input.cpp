@@ -30,10 +30,19 @@ void Input::update(GLFWwindow* win) {
 		currMouseStates[i] = glfwGetMouseButton(window, i);
 	}
 
-	// Mouse position
+	// Mouse position — skip delta on first frame to avoid giant snap
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	mousePosition = glm::vec2((float)x, (float)y);
+
+	static bool firstFrame = true;
+	if (firstFrame) {
+		mousePosition = glm::vec2((float)x, (float)y);
+		prevMousePosition = mousePosition;
+		firstFrame = false;
+	}
+	else {
+		mousePosition = glm::vec2((float)x, (float)y);
+	}
 
 	// Consume scroll buffer
 	scrollDelta = scrollBuffer;

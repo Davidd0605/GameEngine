@@ -18,6 +18,7 @@
 #include "GameObjects/GameObject.h"
 #include "Systems/RenderSystem.h"
 #include "Utilities/Time.h"
+#include "Functionalities/CameraController.h"
 
 #define elif else if
 
@@ -55,6 +56,7 @@ void setupGL(GLFWwindow*& window) {
 	glViewport(0, 0, globalWidth, globalHeight);
 	glEnable(GL_DEPTH_TEST);
 	glfwSetWindowSizeCallback(window, windowResize);
+	glfwSetScrollCallback(window, Input::scrollCallback);
 }
 
 void globalStart(Scene* scene) { scene->start(); }
@@ -64,6 +66,7 @@ void globalUpdate(Scene* scene) {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Time::update();
+		Input::update(window);
 		scene->update();
 
 		fixedUpdateAccumulator += Time::deltaTime;
@@ -100,6 +103,7 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 	go->getComponent<Transform>()->setRotationX(rotation.x);
 	go->getComponent<Transform>()->setRotationY(rotation.y);
 	go->getComponent<Transform>()->setRotationZ(rotation.z);
+
 	return go;
 }
 
@@ -176,7 +180,7 @@ int main() {
 	cameraGO->addComponent(new Transform());
 	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f));
 	cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-
+	cameraGO->addComponent(new CameraController(5.0f));
 	gameScene->addObject(cameraGO);
 	gameScene->setMainCamera(cameraGO);
 	gameScene->addSystem(new RenderSystem());

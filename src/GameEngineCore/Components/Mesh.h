@@ -49,6 +49,7 @@ public:
 
     void start() override;
     void update() override;
+    void fixedUpdate() override;
     void end() override;
 
 private:

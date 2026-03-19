@@ -68,4 +68,4 @@ void Transform::translate(glm::vec3 translation) {
 
 void Transform::start() {}
 void Transform::update() {}
-void Transform::end() {}
+void Transform::end() {}void Transform::fixedUpdate() {}

@@ -8,6 +8,10 @@ void RenderSystem::update() {
 	this->draw();
 }
 
+void RenderSystem::fixedUpdate() {
+	// rendering happens in update, nothing to do here
+}
+
 void RenderSystem::end() {
 	this->clearCurrentScene();
 }
@@ -34,14 +38,14 @@ void RenderSystem::draw() {
 			sp->setInt("tex" + std::to_string(i), i);
 		}
 
-		
+
 
 		//Default behavior
 		glm::mat4 model = glm::mat4(1);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
 		glm::mat4 VP = projection * view;
-		
+
 		gameObject* camera = currentScene->getMainCamera();
 		if (camera == nullptr) {
 			std::cerr << "[RenderSystem] ERROR :: ATTEMPTING TO RENDER WITHOUT MAIN CAMERA; \n";

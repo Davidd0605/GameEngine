@@ -8,6 +8,7 @@ public:
     virtual ~Component() = default;
     virtual void start() {}
     virtual void update() {}
+    virtual void fixedUpdate() {}
     virtual void end() {}
 
     gameObject* owner = nullptr;

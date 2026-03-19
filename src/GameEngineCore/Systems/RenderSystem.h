@@ -17,6 +17,7 @@ class RenderSystem : public GameSystem
 public:
 	void start() override;
 	void update() override;
+	void fixedUpdate() override;
 	void end() override;
 
 	void setCurrentScene(GameScene* scene) override;

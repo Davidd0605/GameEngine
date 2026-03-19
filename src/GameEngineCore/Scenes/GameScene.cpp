@@ -11,7 +11,14 @@ void GameScene::update()
 		sy->update();
 	}
 }
-void GameScene::fixedUpdate(){}
+void GameScene::fixedUpdate() {
+	for (auto go : gameObjects) {
+		go->fixedUpdate();
+	}
+	for (auto sy : systems) {
+		sy->fixedUpdate();
+	}
+}
 void GameScene::start()
 {
 	for (auto go : gameObjects) {

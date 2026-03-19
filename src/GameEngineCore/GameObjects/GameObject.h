@@ -21,6 +21,7 @@ public:
 	gameObject(std::string name);
 	void start();
 	void update();
+	void fixedUpdate();
 	void end();
 	void render();
 
