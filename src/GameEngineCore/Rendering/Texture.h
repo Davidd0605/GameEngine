@@ -10,7 +10,7 @@
 /// </summary>
 class Texture {
 public:
-    Texture(const char* path, GLenum format = GL_RGB);
+    Texture(const char* path, GLenum format = GL_RGB, bool flipVertically = false);
     void bind(int slot = 0) const;
     void unbind() const;
     void Delete();

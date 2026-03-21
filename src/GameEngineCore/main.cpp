@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <Windows.h>
 #include <shellscalingapi.h>
+#include <stb/stb_image.h>
 #pragma comment(lib, "Shcore.lib")
 //GLM headers
 #include <glm/glm.hpp>
@@ -19,7 +20,7 @@
 #include "Systems/RenderSystem.h"
 #include "Utilities/Time.h"
 #include "Functionalities/CameraController.h"
-
+#include "../../ModelLoader.h"
 #define elif else if
 
 GLFWwindow* window;
@@ -96,7 +97,7 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 			8,
 			3,
 			attributeSizes,
-			{"gaypeace.jpeg", "isreal.jpeg", "damian.jpeg"}
+			{"resources/textures/gaypeace.jpeg", "resources/textures/isreal.jpeg", "resources/textures/damian.jpeg"}
 		)
 	);
 	go->getComponent<Transform>()->setPosition(position);
@@ -185,6 +186,48 @@ int main() {
 	gameScene->setMainCamera(cameraGO);
 	gameScene->addSystem(new RenderSystem());
 
+	ShaderPass* modelShader = new ShaderPass("src/Shaders/model.frag", "src/Shaders/model.vert");
+
+	std::vector<gameObject*> swordObjects = ModelLoader::load("resources/models/sword/scene.gltf", modelShader);
+	std::vector<gameObject*> bunnyObjects = ModelLoader::load("resources/models/bunny/scene.gltf", modelShader);
+	std::vector<gameObject*> grindStoneObjects = ModelLoader::load("resources/models/grindstone/scene.gltf", modelShader);
+	std::vector<gameObject*> scrollObjects = ModelLoader::load("resources/models/scroll/scene.gltf", modelShader);
+	std::vector<gameObject*> mapObjects = ModelLoader::load("resources/models/map/scene.gltf", modelShader);
+	// Add them to your scene manually
+	for (gameObject* go : swordObjects) {
+		Transform* t = go->getComponent<Transform>();
+		if (t) {
+			t->setScale(glm::vec3(.05));
+		}
+		gameScene->addObject(go);
+	}
+	for (gameObject* go : bunnyObjects) {
+		Transform* t = go->getComponent<Transform>();
+		t->setScale(glm::vec3(5));
+		gameScene->addObject(go);
+	}
+
+	for (gameObject* go : grindStoneObjects) {
+		Transform* t = go->getComponent<Transform>();
+		t->setScale(glm::vec3(1));
+		t->setPosition(glm::vec3(0, 0, 4));
+		gameScene->addObject(go);
+
+	}
+
+	for (gameObject* go : mapObjects) {
+		Transform* t = go->getComponent<Transform>();
+		t->setScale(glm::vec3(.1));
+		t->setPosition(glm::vec3(5));
+		gameScene->addObject(go);
+	}
+
+	for (gameObject* go : scrollObjects) {
+		Transform* t = go->getComponent<Transform>();
+		t->setScale(glm::vec3(.01));
+		t->setPosition(glm::vec3(3));
+		gameScene->addObject(go);
+	}
 	globalStart(gameScene);
 	globalUpdate(gameScene);
 	globalEnd(gameScene);

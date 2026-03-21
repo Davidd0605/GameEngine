@@ -96,12 +96,21 @@
     <ClCompile Include="src\GameEngineCore\Rendering\Texture.cpp">
       <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\basic.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="src\Shaders\basic.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="src\Shaders\model.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="src\Shaders\model.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -160,16 +169,8 @@
     <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="damian.jpeg">
-      <Filter>Source Files\Shaders</Filter>
-    </Image>
-    <Image Include="isreal.jpeg">
-      <Filter>Source Files\Shaders</Filter>
-    </Image>
-    <Image Include="gaypeace.jpeg">
-      <Filter>Source Files\Shaders</Filter>
-    </Image>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

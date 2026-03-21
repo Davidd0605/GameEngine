@@ -50,6 +50,7 @@ void Camera::recompute() {
 glm::mat4 Camera::getVPMatrix() {
     return projectionMatrix * viewMatrix;
 }
+
 void Camera::setFov(float fov) {
     this->fov = glm::clamp(fov, 10.0f, 120.0f);
     recompute();
@@ -58,4 +59,5 @@ void Camera::setFov(float fov) {
 float Camera::getFov() {
     return fov;
 }
+
 void Camera::fixedUpdate() {}

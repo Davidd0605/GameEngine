@@ -2,7 +2,7 @@
 
 #include <stb/stb_image.h>
 
-Texture::Texture(const char* path, GLenum format) {
+Texture::Texture(const char* path, GLenum format, bool flipVertically) {
     this->format = format;
 
     glGenTextures(1, &ID);
@@ -18,7 +18,7 @@ Texture::Texture(const char* path, GLenum format) {
 
     // Load image
     int channels;
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(flipVertically);
     unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
 
     if (data) {
