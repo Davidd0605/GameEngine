@@ -4,8 +4,10 @@
 
 #include "Scene.h"
 #include <vector>
+#include <algorithm>
 #include "../GameObjects/GameObject.h"
 #include "../Systems/GameSystem.h"
+#include "../../Light.h"
 
 /// <summary>
 /// Class for the game scene.
@@ -17,6 +19,8 @@ public:
 	using Scene::Scene;
 	using Scene::setMainCamera;
 	using Scene::getMainCamera;
+	using Scene::getCameras;
+	using Scene::getLights;
 
 	void fixedUpdate();
 	void update();
@@ -35,6 +39,8 @@ public:
 private:
 	std::vector<gameObject*> gameObjects;
 	std::vector<GameSystem*> systems;
+
+	void sortCameras();
 };
 
 #endif // !GAME_SCENE_H

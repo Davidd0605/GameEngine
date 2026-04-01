@@ -134,14 +134,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Camera.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Transform.cpp" />
     <ClCompile Include="src\GameEngineCore\GameObjects\GameObject.cpp" />
     <ClCompile Include="src\GameEngineCore\main.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\EBO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\FBO.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VAO.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VBO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\ModelLoader.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\ShaderPass.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\Texture.cpp" />
     <ClCompile Include="src\GameEngineCore\Scenes\GameScene.cpp" />
@@ -154,8 +157,16 @@
   <ItemGroup>
     <None Include="src\Shaders\basic.frag" />
     <None Include="src\Shaders\basic.vert" />
+    <None Include="src\Shaders\light.frag" />
+    <None Include="src\Shaders\light.vert" />
+    <None Include="src\Shaders\model.frag" />
+    <None Include="src\Shaders\model.vert" />
+    <None Include="src\Shaders\plainFBO.frag" />
+    <None Include="src\Shaders\plainFBO.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightTypes.h" />
     <ClInclude Include="src\GameEngineCore\Components\Camera.h" />
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />
     <ClInclude Include="src\GameEngineCore\Components\Mesh.h" />
@@ -164,8 +175,10 @@
     <ClInclude Include="src\GameEngineCore\Functionalities\Functionality.h" />
     <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\FBO.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\ModelLoader.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\Texture.h" />
     <ClInclude Include="src\GameEngineCore\Scenes\GameScene.h" />
@@ -174,11 +187,6 @@
     <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Input.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Time.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="damian.jpeg" />
-    <Image Include="gaypeace.jpeg" />
-    <Image Include="isreal.jpeg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

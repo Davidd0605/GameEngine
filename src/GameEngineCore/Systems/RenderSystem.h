@@ -8,23 +8,28 @@
 #include "../Rendering/ShaderPass.h"
 #include "../Components/Mesh.h"
 #include "../Components/Transform.h"
+#include "../Rendering/ShaderPass.h"
+#include <glad/glad.h>
 #include <vector>
-/// <summary>
-/// System responsible for drawing all meshes in a game scene
-/// </summary>
+
 class RenderSystem : public GameSystem
 {
 public:
-	void start() override;
-	void update() override;
-	void fixedUpdate() override;
-	void end() override;
+    void start() override;
+    void update() override;
+    void fixedUpdate() override;
+    void end() override;
 
-	void setCurrentScene(GameScene* scene) override;
-	void clearCurrentScene() override;
+    void setCurrentScene(GameScene* scene) override;
+    void clearCurrentScene() override;
+
 protected:
-	using GameSystem::currentScene;
-	void draw();
-};
-#endif
+    using GameSystem::currentScene;
+    void draw();
 
+private:
+    void renderSceneObjects(gameObject* camGO);
+    void blitToScreen(GLuint textureID, ShaderPass* sp);
+};
+
+#endif

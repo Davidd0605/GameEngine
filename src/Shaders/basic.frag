@@ -23,6 +23,6 @@ void main() {
         col = mix(t1, t2, cycle - 1.0);
     else
         col = mix(t2, t0, cycle - 2.0);
-
-    FragColor = col;
+    float depth = gl_FragCoord.z;
+    FragColor = col * depth;
 }

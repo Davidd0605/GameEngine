@@ -42,6 +42,19 @@ void GameScene::end()
 
 void GameScene::addObject(gameObject* go) {
 	this->gameObjects.push_back(go);
+
+	// Auto-register camera
+	Camera* cam = go->getComponent<Camera>();
+	if (cam != nullptr) {
+		cameras.push_back(go);
+		sortCameras();
+	}
+
+	// Auto-register light
+	Light* light = go->getComponent<Light>();
+	if (light != nullptr) {
+		lights.push_back(go);
+	}
 }
 
 void GameScene::removeObject(gameObject* go) {
@@ -64,4 +77,11 @@ void GameScene::addSystem(GameSystem* system) {
 
 void GameScene::removeSystem(GameSystem* system) {
 	this->systems.erase(std::remove(systems.begin(), systems.end(), system), systems.end());
+}
+
+void GameScene::sortCameras() {
+	std::sort(cameras.begin(), cameras.end(), [](gameObject* a, gameObject* b) {
+		return a->getComponent<Camera>()->priority > b->getComponent<Camera>()->priority;
+		});
+	this->setMainCamera(cameras.front());
 }
