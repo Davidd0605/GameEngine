@@ -22,7 +22,7 @@
 class Mesh : public Component {
 public:
     // With indices
-    Mesh(float vertices[], int sizeofVertices, int verticesSize,
+    Mesh(float vertices[], int verticesSize, int verticesBytes,
         int indices[], int indicesSize,
         ShaderPass* shaderPass,
         int stride, int noAttributes, int attributeSize[],

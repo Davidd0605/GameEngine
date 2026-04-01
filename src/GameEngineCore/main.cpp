@@ -20,7 +20,7 @@
 #include "Systems/RenderSystem.h"
 #include "Utilities/Time.h"
 #include "Functionalities/CameraController.h"
-#include "../../ModelLoader.h"
+#include "Rendering/ModelLoader.h"
 #define elif else if
 
 GLFWwindow* window;
@@ -41,21 +41,32 @@ void setupGL(GLFWwindow*& window) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+
 	globalWidth = GetSystemMetrics(SM_CXSCREEN);
 	globalHeight = GetSystemMetrics(SM_CYSCREEN);
-	window = glfwCreateWindow(globalWidth, globalHeight, "David engine", NULL, NULL);
+
+	window = glfwCreateWindow(globalWidth, globalHeight, "Kartof engine", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return;
 	}
+
 	glfwMakeContextCurrent(window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return;
 	}
+
 	glViewport(0, 0, globalWidth, globalHeight);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // when both stencil and depth tests pass, replace stencil value
+
+	//Backface culling
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glFrontFace(GL_CW);
 	glfwSetWindowSizeCallback(window, windowResize);
 	glfwSetScrollCallback(window, Input::scrollCallback);
 }
@@ -64,17 +75,19 @@ void globalStart(Scene* scene) { scene->start(); }
 
 void globalUpdate(Scene* scene) {
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		Time::update();
 		Input::update(window);
 		scene->update();
-
 		fixedUpdateAccumulator += Time::deltaTime;
 		while (fixedUpdateAccumulator >= FIXED_TIMESTEP) {
 			scene->fixedUpdate();
 			fixedUpdateAccumulator -= FIXED_TIMESTEP;
 		}
+
+		std::string FPS = std::to_string(Time::fps);
+		std::string title = "Kartof: " + FPS + " FPS \n";
+		glfwSetWindowTitle(window, title.c_str());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -83,8 +96,8 @@ void globalUpdate(Scene* scene) {
 
 void globalEnd(Scene* scene) { scene->end(); }
 
-gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
-	glm::vec3 position, glm::vec3 rotation, std::string name) {
+//UTILITY FUNCTIONS
+gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 rotation, std::string name) {
 
 	gameObject* go = new gameObject(name);
 	go->addComponent(new Transform());
@@ -107,8 +120,40 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 
 	return go;
 }
+gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 color, float intensity, std::string name)
+{
+	gameObject* go = new gameObject(name);
+
+	// Transform
+	go->addComponent(new Transform());
+	go->getComponent<Transform>()->setPosition(position);
+	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
+	// Light component
+	go->addComponent(new Light(LightType::Point, intensity, color));
+
+	// Mesh (visual representation)
+	ShaderPass* lightShader = new ShaderPass("src/Shaders/light.frag", "src/Shaders/light.vert");
+
+	go->addComponent(
+		new Mesh(
+			vertices,
+			vertexCount,
+			verticesBytes,
+			lightShader,
+			8,
+			3,
+			attributeSizes,
+			{}
+		)
+	);
+
+	return go;
+}
 
 int main() {
+
+
+	/// --- START OF SCENE SETUP ---
 	setupGL(window);
 
 	GameScene* gameScene = new GameScene("Test game scene 1");
@@ -158,7 +203,6 @@ int main() {
 		  -0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 1.0f,   0.0f, 1.0f,
 		  -0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 1.0f,   0.0f, 0.0f,
 	};
-
 	int attributeSizes[] = { 3, 3, 2 }; // pos, col, uv
 
 	// --- Cubes ---
@@ -177,57 +221,42 @@ int main() {
 	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
 
+
 	gameObject* cameraGO = new gameObject("MainCamera");
 	cameraGO->addComponent(new Transform());
-	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f));
+	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f, 0, true));
 	cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 	cameraGO->addComponent(new CameraController(5.0f));
-	gameScene->addObject(cameraGO);
-	gameScene->setMainCamera(cameraGO);
-	gameScene->addSystem(new RenderSystem());
 
+	gameScene->addObject(cameraGO);
+	gameScene->addSystem(new RenderSystem());
+	gameScene->addObject(makeLight(
+		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+		glm::vec3(0.0f, 10.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		1.0f,
+		"Light_1"
+	));
+
+	// --- Models ---
 	ShaderPass* modelShader = new ShaderPass("src/Shaders/model.frag", "src/Shaders/model.vert");
 
-	std::vector<gameObject*> swordObjects = ModelLoader::load("resources/models/sword/scene.gltf", modelShader);
-	std::vector<gameObject*> bunnyObjects = ModelLoader::load("resources/models/bunny/scene.gltf", modelShader);
-	std::vector<gameObject*> grindStoneObjects = ModelLoader::load("resources/models/grindstone/scene.gltf", modelShader);
-	std::vector<gameObject*> scrollObjects = ModelLoader::load("resources/models/scroll/scene.gltf", modelShader);
-	std::vector<gameObject*> mapObjects = ModelLoader::load("resources/models/map/scene.gltf", modelShader);
-	// Add them to your scene manually
-	for (gameObject* go : swordObjects) {
-		Transform* t = go->getComponent<Transform>();
-		if (t) {
-			t->setScale(glm::vec3(.05));
-		}
-		gameScene->addObject(go);
-	}
-	for (gameObject* go : bunnyObjects) {
-		Transform* t = go->getComponent<Transform>();
-		t->setScale(glm::vec3(5));
+	std::vector<gameObject*> sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelShader);
+	std::vector<gameObject*> bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelShader);
+
+	for (gameObject* go : sponza) {
 		gameScene->addObject(go);
 	}
 
-	for (gameObject* go : grindStoneObjects) {
-		Transform* t = go->getComponent<Transform>();
-		t->setScale(glm::vec3(1));
-		t->setPosition(glm::vec3(0, 0, 4));
-		gameScene->addObject(go);
-
-	}
-
-	for (gameObject* go : mapObjects) {
-		Transform* t = go->getComponent<Transform>();
-		t->setScale(glm::vec3(.1));
-		t->setPosition(glm::vec3(5));
+	for (gameObject* go : bunny) {
+		go->getComponent<Transform>()->setRotationX(90);
 		gameScene->addObject(go);
 	}
 
-	for (gameObject* go : scrollObjects) {
-		Transform* t = go->getComponent<Transform>();
-		t->setScale(glm::vec3(.01));
-		t->setPosition(glm::vec3(3));
-		gameScene->addObject(go);
-	}
+	// --- END OF SCENE SETUP ---
+
+
+	// --- START GAME LOOP ---
 	globalStart(gameScene);
 	globalUpdate(gameScene);
 	globalEnd(gameScene);

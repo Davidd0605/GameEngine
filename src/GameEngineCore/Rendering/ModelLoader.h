@@ -8,12 +8,12 @@
 #include <glm/gtx/quaternion.hpp>
 #include <json/json.h>
 
-#include "src/GameEngineCore/Scenes/GameScene.h"
-#include "src/GameEngineCore/GameObjects/GameObject.h"
-#include "src/GameEngineCore/Components/Transform.h"
-#include "src/GameEngineCore/Components/Mesh.h"
-#include "src/GameEngineCore/Rendering/ShaderPass.h"
-#include "src/GameEngineCore/Rendering/Texture.h"
+#include "../Scenes/GameScene.h"
+#include "../GameObjects/GameObject.h"
+#include "../Components/Transform.h"
+#include "../Components/Mesh.h"
+#include "../Rendering/ShaderPass.h"
+#include "../Rendering/Texture.h"
 
 using json = nlohmann::json;
 

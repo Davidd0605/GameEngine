@@ -194,7 +194,17 @@ void ShaderPass::bind() const{
 void ShaderPass::unbind() const{
 	glUseProgram(0);
 }
+void ShaderPass::setVec3(const std::string& name, const glm::vec3& value) const
+{
+	bind();
+	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
+}
 
+void ShaderPass::setVec4(const std::string& name, const glm::vec4& value) const
+{
+	bind();
+	glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
+}
 void ShaderPass::setBool(const std::string& name, bool value) const
 {
 	bind();

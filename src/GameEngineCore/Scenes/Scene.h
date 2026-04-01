@@ -4,6 +4,7 @@
 #include <string>
 #include "../Components/Camera.h"
 #include "../GameObjects/GameObject.h"
+#include <vector>
 /// <summary>
 /// Abstract class for the scene.
 /// </summary>
@@ -22,9 +23,15 @@ public:
 	std::string name;
 
 	void setMainCamera(gameObject* mainCamera);
+
 	gameObject* getMainCamera();
-private:
+	std::vector<gameObject*> getCameras();
+	std::vector<gameObject*> getLights();
+	
+protected:
 	gameObject* mainCamera;
+	std::vector<gameObject*> cameras;
+	std::vector<gameObject*> lights;
 };
 
 #endif // !SCENE_H

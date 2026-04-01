@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera(float fov, float aspectRatio, float nearPlane, float farPlane) {
+Camera::Camera(float fov, float aspectRatio, float nearPlane, float farPlane, int priority, bool postprocessing) {
     this->fov = fov;
     this->aspectRatio = aspectRatio;
     this->nearPlane = nearPlane;
@@ -8,6 +8,14 @@ Camera::Camera(float fov, float aspectRatio, float nearPlane, float farPlane) {
     this->transform = nullptr;
     this->viewMatrix = glm::mat4(1.0f);
     this->projectionMatrix = glm::mat4(1.0f);
+    this->priority = priority;
+    this->postProcessing = postprocessing;
+    if (this->postProcessing) {
+        fbo = new FBO();
+    }
+    else {
+        fbo = nullptr;
+	}
 }
 
 void Camera::setAspectRatio(float aspectRatio) {

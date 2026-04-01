@@ -39,7 +39,12 @@ Texture::Texture(const char* path, GLenum format, bool flipVertically) {
     stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-
+Texture::Texture(GLuint existingID, int width, int height) {
+    this->ID = existingID;
+    this->width = width;
+    this->height = height;
+    this->format = GL_RGB;
+}
 void Texture::bind(int slot) const {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, ID);
