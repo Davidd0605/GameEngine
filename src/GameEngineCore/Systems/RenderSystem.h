@@ -12,6 +12,17 @@
 #include <glad/glad.h>
 #include <vector>
 
+/// <summary>
+/// RenderSystem is responsible for rendering the game objects in the current scene. 
+/// It uses the main camera to determine the view and projection matrices, and renders all objects with a Mesh component. 
+/// It also handles post-processing effects by applying a series of ShaderPasses to the rendered image before blitting it to the screen.
+/// 
+/// Has default post-processing pass that simply blits the camera FBO texture to the screen, 
+/// but users can add their own custom ShaderPasses for effects like bloom, color grading, etc.
+/// 
+/// Post processing is enabled by main camera's postProcessing boolean. 
+/// If disabled, the system will render directly to the default framebuffer without applying post-processing effects.
+/// </summary>
 class RenderSystem : public GameSystem
 {
 public:
@@ -23,6 +34,11 @@ public:
     void setCurrentScene(GameScene* scene) override;
     void clearCurrentScene() override;
 
+	bool postProcessingEnabled = false;
+
+	void addPostProcessingShaderPass(ShaderPass* sp);
+	void clearPostProcessingShaderPasses();
+    std::vector<ShaderPass*> getPostProcessingShaderPasses();
 protected:
     using GameSystem::currentScene;
     void draw();
@@ -30,6 +46,7 @@ protected:
 private:
     void renderSceneObjects(gameObject* camGO);
     void blitToScreen(GLuint textureID, ShaderPass* sp);
+	std::vector<ShaderPass*> postProcessingShaderPasses;
 };
 
 #endif

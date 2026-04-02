@@ -131,6 +131,15 @@
     <None Include="src\Shaders\plainFBO.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="src\Shaders\edgedetection.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="pixelation.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="bloom.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameEngineCore\Components\Component.h">

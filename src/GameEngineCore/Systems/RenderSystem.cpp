@@ -1,5 +1,7 @@
 #include "RenderSystem.h"
 
+
+//hardcoded rectangle vertices for post-processing blit (NDC coords + UVs)
 float rectangleVertices[] =
 {
 	 1.0f, -1.0f,  1.0f, 0.0f,
@@ -11,13 +13,21 @@ float rectangleVertices[] =
 	-1.0f,  1.0f,  0.0f, 1.0f
 };
 
-ShaderPass* fsSP = nullptr;
+
 GLuint rectVAO = 0;
 GLuint rectVBO = 0;
 
-void RenderSystem::start() {
-	fsSP = new ShaderPass("src/Shaders/plainFBO.frag", "src/Shaders/plainFBO.vert");
+// pingpong FBOs for post processing
+FBO* fbos[2];
 
+void RenderSystem::start() {
+	ShaderPass* fsSP = new ShaderPass("src/Shaders/plainFBO.frag", "src/Shaders/plainFBO.vert");
+
+	// Add a default post-processing pass (can be overridden by user)
+	this->addPostProcessingShaderPass(fsSP);
+
+	fbos[0] = new FBO();
+	fbos[1] = new FBO();
 	glGenVertexArrays(1, &rectVAO);
 	glGenBuffers(1, &rectVBO);
 	glBindVertexArray(rectVAO);
@@ -39,6 +49,11 @@ void RenderSystem::fixedUpdate() {}
 
 void RenderSystem::end() {
 	this->clearCurrentScene();
+	glDeleteVertexArrays(1, &rectVAO);
+	glDeleteBuffers(1, &rectVBO);
+
+	fbos[0]->Delete();
+	fbos[1]->Delete();
 }
 
 void RenderSystem::blitToScreen(GLuint textureID, ShaderPass* sp) {
@@ -141,9 +156,48 @@ void RenderSystem::draw() {
 
 	// DECIDE WHAT WE ARE RENDERING
 	if (mainCam->postProcessing) {
-		blitToScreen(mainCam->getFBO()->getTexture()->ID, fsSP);
+		// ping-pong between fbos[0] and fbos[1]
+		
+		// first pass reads from the camera FBO
+		GLuint srcTexture = mainCam->getFBO()->getTexture()->ID;
+
+		int passCount = (int)postProcessingShaderPasses.size();
+		for (int i = 0; i < passCount; i++) {
+			bool isLast = (i == passCount - 1);
+			int dstIndex = i % 2; 
+
+			if (isLast) {
+				// Final pass: blit straight to the default framebuffer
+				blitToScreen(srcTexture, postProcessingShaderPasses[i]);
+			}
+			else {
+				fbos[dstIndex]->Bind();
+				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_CULL_FACE);
+				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT);
+
+				ShaderPass* sp = postProcessingShaderPasses[i];
+				sp->bind();
+				glBindVertexArray(rectVAO);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, srcTexture);
+				sp->setFloat("time", glfwGetTime());
+				sp->setInt("screenTexture", 0);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+				glBindVertexArray(0);
+				sp->unbind();
+				fbos[dstIndex]->Unbind();
+
+				glEnable(GL_DEPTH_TEST);
+				glEnable(GL_CULL_FACE);
+
+				srcTexture = fbos[dstIndex]->getTexture()->ID;
+			}
+		}
 	}
 	else {
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -158,4 +212,19 @@ void RenderSystem::setCurrentScene(GameScene* scene) {
 
 void RenderSystem::clearCurrentScene() {
 	this->currentScene = nullptr;
+}
+
+void RenderSystem::addPostProcessingShaderPass(ShaderPass* sp) {
+	this->postProcessingShaderPasses.push_back(sp);
+}
+
+std::vector<ShaderPass*> RenderSystem::getPostProcessingShaderPasses() {
+	return this->postProcessingShaderPasses;
+}
+
+void RenderSystem::clearPostProcessingShaderPasses() {
+	this->postProcessingShaderPasses.clear();
+	ShaderPass* fsSP = new ShaderPass("src/Shaders/plainFBO.frag", "src/Shaders/plainFBO.vert");
+
+	this->addPostProcessingShaderPass(fsSP);
 }
