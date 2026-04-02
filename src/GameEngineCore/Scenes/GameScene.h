@@ -36,6 +36,17 @@ public:
 
 	std::vector<gameObject*> getGameObjects();
 	std::vector<GameSystem*> getSystems();
+
+	gameObject* findObjectByName(const std::string& name);
+	template<typename T>
+	T* getSystem() {
+		for (GameSystem* system : systems) {
+			T* result = dynamic_cast<T*>(system);
+			if (result != nullptr) return result;
+		}
+		return nullptr;
+	}
+
 private:
 	std::vector<gameObject*> gameObjects;
 	std::vector<GameSystem*> systems;

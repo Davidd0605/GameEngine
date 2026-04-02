@@ -155,8 +155,11 @@
     <ClCompile Include="stb.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bloom.frag" />
+    <None Include="pixelation.frag" />
     <None Include="src\Shaders\basic.frag" />
     <None Include="src\Shaders\basic.vert" />
+    <None Include="src\Shaders\edgedetection.frag" />
     <None Include="src\Shaders\light.frag" />
     <None Include="src\Shaders\light.vert" />
     <None Include="src\Shaders\model.frag" />

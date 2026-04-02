@@ -230,6 +230,11 @@ int main() {
 
 	gameScene->addObject(cameraGO);
 	gameScene->addSystem(new RenderSystem());
+	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/plainFBO.frag", "src/Shaders/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/edgedetection.frag", "src/Shaders/plainFBO.vert"));
+	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("pixelation.frag", "src/Shaders/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("bloom.frag", "src/Shaders/plainFBO.vert"));
 	gameScene->addObject(makeLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 10.0f, 0.0f),

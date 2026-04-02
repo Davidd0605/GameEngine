@@ -8,8 +8,6 @@ void gameObject::start() {
 	for (auto component : components) {
 		component->start();
 	}
-	//TODO: start all children game objects
-	//TODO: start all functionalities
 }
 
 void gameObject::update() {
@@ -28,6 +26,7 @@ void gameObject::end() {
 	for (auto component : components) {
 		component->end();
 	}
+	free(this);
 }
 
 void gameObject::render() {

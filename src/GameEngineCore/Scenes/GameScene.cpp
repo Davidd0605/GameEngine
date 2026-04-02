@@ -85,3 +85,10 @@ void GameScene::sortCameras() {
 		});
 	this->setMainCamera(cameras.front());
 }
+
+gameObject* GameScene::findObjectByName(const std::string& name) {
+	for (auto go : gameObjects) {
+		if (go->name == name) return go;
+	}
+	return nullptr;
+}
