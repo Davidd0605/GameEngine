@@ -1,5 +1,7 @@
 #include "FBO.h"
 
+
+// TODO ADD DEPTH TEXTURE SUPPORT
 FBO::FBO(int width, int height) {
     glGenFramebuffers(1, &ID);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);

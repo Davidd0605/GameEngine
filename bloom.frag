@@ -30,7 +30,7 @@ void main()
     bloom /= samples;
 
     // additive blend bloom on top of original
-    vec3 result = color + bloom * 1.5;
+    vec3 result = color + bloom * 10;
 
     FragColor = vec4(result, 1.0);
 }
