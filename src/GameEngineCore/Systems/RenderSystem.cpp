@@ -56,7 +56,7 @@ void RenderSystem::end() {
 	fbos[1]->Delete();
 }
 
-void RenderSystem::blitToScreen(GLuint textureID, ShaderPass* sp) {
+void RenderSystem::blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -67,8 +67,53 @@ void RenderSystem::blitToScreen(GLuint textureID, ShaderPass* sp) {
 	glDisable(GL_CULL_FACE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	sp->setFloat("time", glfwGetTime());
 	sp->setInt("screenTexture", 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, depthID);
+	sp->setInt("depthTexture", 1);
+	sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
+	sp->setMatrix4("cameraVP", currentScene->getMainCamera()->getComponent<Camera>()->getVPMatrix());
+	sp->setFloat("time", glfwGetTime());
+
+
+	// Bind light values (needs lights and currently using SP)
+	std::vector<gameObject*> lights = currentScene->getLights();
+	int dirCount = 0;
+	int pointCount = 0;
+
+	for (int k = 0; k < (int)lights.size() && dirCount < 32; k++) {
+		Light* light = lights[k]->getComponent<Light>();
+		Transform* transform = lights[k]->getComponent<Transform>();
+		if (!light || !transform) continue;
+		std::string base;
+		switch (light->getType()) {
+		case LightType::Point:
+			base = "pointLights[" + std::to_string(pointCount) + "]";
+			sp->setVec3(base + ".position", transform->getPosition());
+			sp->setVec3(base + ".color", light->getColor());
+			sp->setFloat(base + ".intensity", light->getIntensity());
+			sp->setFloat(base + ".range", light->getRange());
+			pointCount++;
+			break;
+		case LightType::Directional:
+			base = "dirLights[" + std::to_string(dirCount) + "]";
+			sp->setVec3(base + ".direction", light->getDirection());
+			sp->setVec3(base + ".color", light->getColor());
+			sp->setFloat(base + ".intensity", light->getIntensity());
+			sp->setFloat(base + ".range", light->getRange());
+			dirCount++;
+			break;
+		default:
+			std::cout << "Other light not recognized yet: " << base << "\n";
+			break;
+		}
+	}
+
+
+	sp->setInt("pointLightCount", pointCount);
+	sp->setInt("dirLightCount", dirCount);
+
+	//draw fullscreen quad
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
@@ -76,6 +121,7 @@ void RenderSystem::blitToScreen(GLuint textureID, ShaderPass* sp) {
 	sp->unbind();
 }
 
+// render all objects with their own shaders
 void RenderSystem::renderSceneObjects(gameObject* camGO) {
 	const std::vector<gameObject*>& gos = this->currentScene->getGameObjects();
 	Camera* cam = camGO->getComponent<Camera>();
@@ -111,6 +157,7 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 
 		sp->setFloat("time", glfwGetTime());
 		sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
+		sp->setVec3("viewPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
 		sp->setMatrix4("model", model);
 		sp->setMatrix4("VP", cam->getVPMatrix());
 
@@ -119,17 +166,34 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 			sp->setVec3("color", lightComp->getColor());
 
 		std::vector<gameObject*> lights = currentScene->getLights();
-		int count = std::min((int)lights.size(), 32);
-		sp->setInt("lightCount", count);
-		for (int i = 0; i < count; i++) {
+		int total = std::min((int)lights.size(), 32);
+		int pointCount = 0, dirCount = 0;
+
+		for (int i = 0; i < total; i++) {
 			Light* light = lights[i]->getComponent<Light>();
 			Transform* transform = lights[i]->getComponent<Transform>();
 			if (!light || !transform) continue;
-			std::string base = "lights[" + std::to_string(i) + "]";
-			sp->setVec3(base + ".position", transform->getPosition());
-			sp->setVec3(base + ".color", light->getColor());
-			sp->setFloat(base + ".intensity", light->getIntensity());
+
+			if (light->getType() == LightType::Point) {
+				std::string base = "pointLights[" + std::to_string(pointCount) + "]";
+				sp->setVec3(base + ".position", transform->getPosition());
+				sp->setVec3(base + ".color", light->getColor());
+				sp->setFloat(base + ".intensity", light->getIntensity());
+				sp->setFloat(base + ".range", light->getRange());
+				pointCount++;
+			}
+			else if (light->getType() == LightType::Directional) {
+				std::string base = "dirLights[" + std::to_string(dirCount) + "]";
+				sp->setVec3(base + ".direction", light->getDirection());
+				sp->setVec3(base + ".color", light->getColor());
+				sp->setFloat(base + ".intensity", light->getIntensity());
+				sp->setFloat(base + ".range", light->getRange());
+				dirCount++;
+			}
 		}
+
+		sp->setInt("pointLightCount", pointCount);
+		sp->setInt("dirLightCount", dirCount);
 
 		ms->draw();
 		sp->unbind();
@@ -137,11 +201,13 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 	}
 }
 
+// Main draw function that handles rendering the scene with or without post-processing based on the main camera's settings
 void RenderSystem::draw() {
+	//fetch main camera
 	gameObject* mainCamGO = this->currentScene->getMainCamera();
 	Camera* mainCam = mainCamGO->getComponent<Camera>();
 
-	// FILL ALL FBOS
+	// render scene for all cameras that have an FBO (post-processing enabled) to their FBOs
 	for (auto cam : this->currentScene->getCameras()) {
 		if (cam->getComponent<Camera>()->postProcessing) {
 
@@ -154,21 +220,22 @@ void RenderSystem::draw() {
 		}
 	}
 
-	// DECIDE WHAT WE ARE RENDERING
+	// How we render
 	if (mainCam->postProcessing) {
 		// ping-pong between fbos[0] and fbos[1]
-		
+
 		// first pass reads from the camera FBO
 		GLuint srcTexture = mainCam->getFBO()->getTexture()->ID;
+		GLuint dpthTexture = mainCam->getFBO()->getDepthTexture()->ID;
 
 		int passCount = (int)postProcessingShaderPasses.size();
 		for (int i = 0; i < passCount; i++) {
 			bool isLast = (i == passCount - 1);
-			int dstIndex = i % 2; 
+			int dstIndex = i % 2;
 
 			if (isLast) {
 				// Final pass: blit straight to the default framebuffer
-				blitToScreen(srcTexture, postProcessingShaderPasses[i]);
+				blitToScreen(srcTexture, dpthTexture, postProcessingShaderPasses[i]);
 			}
 			else {
 				fbos[dstIndex]->Bind();
@@ -179,11 +246,59 @@ void RenderSystem::draw() {
 
 				ShaderPass* sp = postProcessingShaderPasses[i];
 				sp->bind();
+
 				glBindVertexArray(rectVAO);
+
+				//set textures
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, srcTexture);
-				sp->setFloat("time", glfwGetTime());
 				sp->setInt("screenTexture", 0);
+
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, dpthTexture);
+				sp->setInt("depthTexture", 1);
+
+				//set basic uniforms
+				sp->setFloat("time", glfwGetTime());
+				sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
+				sp->setMatrix4("cameraVP", currentScene->getMainCamera()->getComponent<Camera>()->getVPMatrix());
+
+				// Upload directional lights for post-processing shaders (e.g. volumetric fog)
+				std::vector<gameObject*> lights = currentScene->getLights();
+				int dirCount = 0;
+				int pointCount = 0;
+
+				for (int k = 0; k < (int)lights.size() && dirCount < 32; k++) {
+					Light* light = lights[k]->getComponent<Light>();
+					Transform* transform = lights[k]->getComponent<Transform>();
+					if (!light || !transform) continue;
+					std::string base;
+					switch (light->getType()) {
+						case LightType::Point:
+							base = "pointLights[" + std::to_string(pointCount) + "]";
+							sp->setVec3(base + ".position", transform->getPosition());
+							sp->setVec3(base + ".color", light->getColor());
+							sp->setFloat(base + ".intensity", light->getIntensity());
+							sp->setFloat(base + ".range", light->getRange());
+							pointCount++;
+							break;
+						case LightType::Directional:
+							base = "dirLights[" + std::to_string(dirCount) + "]";
+							sp->setVec3(base + ".direction", light->getDirection());
+							sp->setVec3(base + ".color", light->getColor());
+							sp->setFloat(base + ".intensity", light->getIntensity());
+							sp->setFloat(base + ".range", light->getRange());
+							dirCount++;
+							break;
+						default:
+							std::cout << "Other light not recognized yet: " << base << "\n";
+							break;
+					}
+				}
+
+
+				sp->setInt("pointLightCount", pointCount);
+				sp->setInt("dirLightCount", dirCount);
 				glDrawArrays(GL_TRIANGLES, 0, 6);
 				glBindVertexArray(0);
 				sp->unbind();
@@ -197,7 +312,7 @@ void RenderSystem::draw() {
 		}
 	}
 	else {
-
+		// no post processing just render directly to screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);

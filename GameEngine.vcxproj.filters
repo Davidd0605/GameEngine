@@ -140,6 +140,9 @@
     <None Include="bloom.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="volumetricFog.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameEngineCore\Components\Component.h">
@@ -206,6 +209,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\FBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightSpin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

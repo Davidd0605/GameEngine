@@ -10,16 +10,19 @@ class FBO {
 public:
     GLuint ID;
     GLuint textureID;
+    GLuint depthTextureID;
 
     FBO(int width = 1920, int height = 1080);
     void Bind();
     void Unbind();
     void Delete();
     Texture* getTexture();
+    Texture* getDepthTexture();
 
 private:
     GLuint RBO;
     Texture* texture;
+	Texture* depthTexture;
 };
 
 #endif

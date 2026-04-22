@@ -45,7 +45,7 @@ protected:
 
 private:
     void renderSceneObjects(gameObject* camGO);
-    void blitToScreen(GLuint textureID, ShaderPass* sp);
+    void blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp);
 	std::vector<ShaderPass*> postProcessingShaderPasses;
 };
 

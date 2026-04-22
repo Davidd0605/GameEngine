@@ -166,9 +166,11 @@
     <None Include="src\Shaders\model.vert" />
     <None Include="src\Shaders\plainFBO.frag" />
     <None Include="src\Shaders\plainFBO.vert" />
+    <None Include="volumetricFog.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Light.h" />
+    <ClInclude Include="lightSpin.h" />
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="src\GameEngineCore\Components\Camera.h" />
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />

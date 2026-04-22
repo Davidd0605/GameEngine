@@ -21,6 +21,7 @@
 #include "Utilities/Time.h"
 #include "Functionalities/CameraController.h"
 #include "Rendering/ModelLoader.h"
+#include "../../lightSpin.h"
 #define elif else if
 
 GLFWwindow* window;
@@ -110,7 +111,7 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 			8,
 			3,
 			attributeSizes,
-			{"resources/textures/gaypeace.jpeg", "resources/textures/isreal.jpeg", "resources/textures/damian.jpeg"}
+			{ "resources/textures/gaypeace.jpeg", "resources/textures/isreal.jpeg", "resources/textures/damian.jpeg" }
 		)
 	);
 	go->getComponent<Transform>()->setPosition(position);
@@ -120,38 +121,36 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 
 	return go;
 }
-gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 color, float intensity, std::string name)
+
+gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
+	glm::vec3 position, glm::vec3 color, float intensity, float range, std::string name)
 {
 	gameObject* go = new gameObject(name);
-
-	// Transform
 	go->addComponent(new Transform());
 	go->getComponent<Transform>()->setPosition(position);
 	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
-	// Light component
-	go->addComponent(new Light(LightType::Point, intensity, color));
+	go->addComponent(new Light(LightType::Point, intensity, color, range));
 
-	// Mesh (visual representation)
 	ShaderPass* lightShader = new ShaderPass("src/Shaders/light.frag", "src/Shaders/light.vert");
+	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, lightShader, 8, 3, attributeSizes, {}));
+	return go;
+}
 
-	go->addComponent(
-		new Mesh(
-			vertices,
-			vertexCount,
-			verticesBytes,
-			lightShader,
-			8,
-			3,
-			attributeSizes,
-			{}
-		)
-	);
+gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
+	glm::vec3 position, glm::vec3 direction, glm::vec3 color, float intensity, float range, std::string name)
+{
+	gameObject* go = new gameObject(name);
+	go->addComponent(new Transform());
+	go->getComponent<Transform>()->setPosition(position);
+	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
+	go->addComponent(new Light(LightType::Directional, intensity, color, range, direction));
 
+	ShaderPass* lightShader = new ShaderPass("src/Shaders/light.frag", "src/Shaders/light.vert");
+	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, lightShader, 8, 3, attributeSizes, {}));
 	return go;
 }
 
 int main() {
-
 
 	/// --- START OF SCENE SETUP ---
 	setupGL(window);
@@ -221,7 +220,6 @@ int main() {
 	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
 
-
 	gameObject* cameraGO = new gameObject("MainCamera");
 	cameraGO->addComponent(new Transform());
 	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f, 0, true));
@@ -231,17 +229,34 @@ int main() {
 	gameScene->addObject(cameraGO);
 	gameScene->addSystem(new RenderSystem());
 	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/plainFBO.frag", "src/Shaders/plainFBO.vert"));
 	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/edgedetection.frag", "src/Shaders/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("volumetricFog.frag", "src/Shaders/plainFBO.vert"));
 	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("pixelation.frag", "src/Shaders/plainFBO.vert"));
 	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("bloom.frag", "src/Shaders/plainFBO.vert"));
-	gameScene->addObject(makeLight(
+
+	gameObject* light  = makeDirectionalLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 10.0f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		1.0f,
+		glm::vec3(0.0f, 15.0f, 0.0f),	// position (visual only)
+		glm::vec3(-0.5f, -0.5f, 0.0f),		// direction (pointing down)
+		glm::vec3(1, 0, 0),	// color
+		1.0f,                           // intensity
+		10.0f,                          // range
 		"Light_1"
-	));
+	);
+
+	gameScene->addObject(light);
+	light->addComponent(new lightSpin(light));
+
+	gameObject* pointLight = makeLight(
+		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+		glm::vec3(0.0f, 3.0f, 0.0f),	// position (visual only)
+		glm::vec3(1, 0, 1),	// color
+		1.0f,                           // intensity
+		10.0f,                          // range
+		"Light_2"
+	);
+
+	gameScene->addObject(pointLight);
 
 	// --- Models ---
 	ShaderPass* modelShader = new ShaderPass("src/Shaders/model.frag", "src/Shaders/model.vert");
