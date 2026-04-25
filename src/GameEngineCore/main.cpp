@@ -153,7 +153,6 @@ int main() {
 
 	/// --- START OF SCENE SETUP ---
 	setupGL(window);
-
 	GameScene* gameScene = new GameScene("Test game scene 1");
 
 	// x, y, z,   r, g, b,   u, v
@@ -219,27 +218,26 @@ int main() {
 	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
 
+	// --- Camera ---
 	gameObject* cameraGO = new gameObject("MainCamera");
 	cameraGO->addComponent(new Transform());
 	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f, 0, true));
 	cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 	cameraGO->addComponent(new CameraController(5.0f));
-
 	gameScene->addObject(cameraGO);
+
 	gameScene->addSystem(new RenderSystem());
 	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
 	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
 	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
-	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/pixelation.frag", "src/Shaders/utility/plainFBO.vert"));
-	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/bloom.frag", "src/Shaders/utility/plainFBO.vert"));
 
 	gameObject* light  = makeDirectionalLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 15.0f, 0.0f),	// position (visual only)
-		glm::vec3(1, -1.0f, 0.0f),		// direction (pointing down)
+		glm::vec3(0, -1.0f, 0.0f),		// direction (pointing down)
 		glm::vec3(1, 0, 0),				// color
 		1.0f,                           // intensity
-		10.0f,                          // range
+		1.0f,							// range
 		"Light_1"
 	);
 
@@ -250,12 +248,12 @@ int main() {
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 3.0f, 0.0f),	// position (visual only)
 		glm::vec3(1, 0, 1),				// color
-		10.0f,                           // intensity
-		10.0f,                         // range
+		1.0f,                           // intensity
+		5.0f,							// range
 		"Light_2"
 	);
 
-	//gameScene->addObject(pointLight);
+	gameScene->addObject(pointLight);
 
 	// --- Models ---
 	ShaderPass* modelShader = new ShaderPass("src/Shaders/object/model.frag", "src/Shaders/object/model.vert");
