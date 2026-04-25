@@ -144,6 +144,7 @@
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\FBO.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VAO.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\VBO.cpp" />
+    <ClCompile Include="src\GameEngineCore\Rendering\Material.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\ModelLoader.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\ShaderPass.cpp" />
     <ClCompile Include="src\GameEngineCore\Rendering\Texture.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\FBO.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h" />
+    <ClInclude Include="src\GameEngineCore\Rendering\Material.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\ModelLoader.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\Texture.h" />

@@ -1,17 +1,18 @@
 //Standard headers
+#include <iostream>
 
 //OpenGL headers
-#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <Windows.h>
 #include <shellscalingapi.h>
 #include <stb/stb_image.h>
 #pragma comment(lib, "Shcore.lib")
+
 //GLM headers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>	
+#include <glm/gtc/type_ptr.hpp>
 
 //Custom headers
 #include "Scenes/Scene.h"
@@ -22,6 +23,8 @@
 #include "Functionalities/CameraController.h"
 #include "Rendering/ModelLoader.h"
 #include "Functionalities/lightSpin.h"
+#include "Components/Light.h"
+#include "Rendering/Material.h"
 
 #define elif else if
 
@@ -60,15 +63,16 @@ void setupGL(GLFWwindow*& window) {
 		return;
 	}
 
-	//const char* version = (const char*)glGetString(GL_VERSION);
-	//printf("OpenGL version: %s\n", version);
-
 	glViewport(0, 0, globalWidth, globalHeight);
 
-	//Backface culling
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
+
 	glfwSetWindowSizeCallback(window, windowResize);
 	glfwSetScrollCallback(window, Input::scrollCallback);
 }
@@ -77,10 +81,10 @@ void globalStart(Scene* scene) { scene->start(); }
 
 void globalUpdate(Scene* scene) {
 	while (!glfwWindowShouldClose(window)) {
-
 		Time::update();
 		Input::update(window);
 		scene->update();
+
 		fixedUpdateAccumulator += Time::deltaTime;
 		while (fixedUpdateAccumulator >= FIXED_TIMESTEP) {
 			scene->fixedUpdate();
@@ -88,7 +92,7 @@ void globalUpdate(Scene* scene) {
 		}
 
 		std::string FPS = std::to_string(Time::fps);
-		std::string title = "Kartof: " + FPS + " FPS \n";
+		std::string title = "Kartof: " + FPS + " FPS";
 		glfwSetWindowTitle(window, title.c_str());
 
 		glfwSwapBuffers(window);
@@ -98,23 +102,21 @@ void globalUpdate(Scene* scene) {
 
 void globalEnd(Scene* scene) { scene->end(); }
 
-//UTILITY FUNCTIONS
-gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 rotation, std::string name) {
+// --- UTILITY FUNCTIONS ---
 
+gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
+	glm::vec3 position, glm::vec3 rotation, std::string name)
+{
 	gameObject* go = new gameObject(name);
 	go->addComponent(new Transform());
-	go->addComponent(
-		new Mesh(
-			vertices,
-			vertexCount,
-			verticesBytes,
-			new ShaderPass("src/Shaders/object/basic.frag", "src/Shaders/object/basic.vert"),
-			8,
-			3,
-			attributeSizes,
-			{ "resources/textures/gaypeace.jpeg", "resources/textures/isreal.jpeg", "resources/textures/damian.jpeg" }
-		)
-	);
+
+	ShaderPass* sp = new ShaderPass("src/Shaders/object/basic.frag", "src/Shaders/object/basic.vert");
+	Material* mat = new Material(sp);
+	//mat->setTexture(0, "resources/textures/damian.jpeg");
+
+
+	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
+
 	go->getComponent<Transform>()->setPosition(position);
 	go->getComponent<Transform>()->setRotationX(rotation.x);
 	go->getComponent<Transform>()->setRotationY(rotation.y);
@@ -122,87 +124,94 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 
 	return go;
 }
-gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 color, float intensity, float range, std::string name)
+
+gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
+	glm::vec3 position, glm::vec3 color, float intensity, float range, std::string name)
 {
 	gameObject* go = new gameObject(name);
 	go->addComponent(new Transform());
 	go->getComponent<Transform>()->setPosition(position);
-	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
+	go->getComponent<Transform>()->setScale(glm::vec3(0.3f, 0.3f, 0.3f));
 	go->addComponent(new Light(LightType::Point, intensity, color, range));
 
-	ShaderPass* lightShader = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
-	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, lightShader, 8, 3, attributeSizes, {}));
+	ShaderPass* sp = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
+	Material* mat = new Material(sp);
+	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
+
 	return go;
 }
-gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 direction, glm::vec3 color, float intensity, float range, std::string name)
+
+gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
+	glm::vec3 position, glm::vec3 direction, glm::vec3 color, float intensity, float range, std::string name)
 {
 	gameObject* go = new gameObject(name);
 	go->addComponent(new Transform());
 	go->getComponent<Transform>()->setPosition(position);
-	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
+	go->getComponent<Transform>()->setScale(glm::vec3(0.3f, 0.3f, 0.3f));
 	go->addComponent(new Light(LightType::Directional, intensity, color, range, direction));
 
-	ShaderPass* lightShader = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
-	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, lightShader, 8, 3, attributeSizes, {}));
+	ShaderPass* sp = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
+	Material* mat = new Material(sp);
+	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
+
 	return go;
 }
-
-
 
 int main() {
 
-	/// --- START OF SCENE SETUP ---
+	// --- START OF SCENE SETUP ---
 	setupGL(window);
+
 	GameScene* gameScene = new GameScene("Test game scene 1");
 
-	// x, y, z,   r, g, b,   u, v
+	// x, y, z,   nx, ny, nz,   u, v
 	float cubeVertices[] = {
 		// Front
-		-0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
 		// Back
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 0.0f,
 		 // Left
-		 -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-		 -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-		 -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-		 -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-		 -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
-		 -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+		 -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+		 -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
+		 -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+		 -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+		 -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
+		 -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
 		 // Right
-		  0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f,
-		  0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-		  0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-		  0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-		  0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f,
-		  0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+		  0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+		  0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
+		  0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+		  0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+		  0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
+		  0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
 		  // Top
-		  -0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-		   0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-		   0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-		   0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-		  -0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 1.0f,   0.0f, 1.0f,
-		  -0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+		  -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+		   0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+		   0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+		   0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+		  -0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
+		  -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
 		  // Bottom
-		  -0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-		   0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 1.0f,   1.0f, 0.0f,
-		   0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 1.0f,   1.0f, 1.0f,
-		   0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 1.0f,   1.0f, 1.0f,
-		  -0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 1.0f,   0.0f, 1.0f,
-		  -0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 1.0f,   0.0f, 0.0f,
+		  -0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 0.0f,
+		   0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 0.0f,
+		   0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 1.0f,
+		   0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 1.0f,
+		  -0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 1.0f,
+		  -0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 0.0f,
 	};
-	int attributeSizes[] = { 3, 3, 2 }; // pos, col, uv
+	int attributeSizes[] = { 3, 3, 2 }; // pos, normal, uv
 
-	// --- Cubes ---
+	//some random objects
 	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
 
@@ -218,7 +227,7 @@ int main() {
 	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
 
-	// --- Camera ---
+	//main camera
 	gameObject* cameraGO = new gameObject("MainCamera");
 	cameraGO->addComponent(new Transform());
 	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f, 0, true));
@@ -226,44 +235,39 @@ int main() {
 	cameraGO->addComponent(new CameraController(5.0f));
 	gameScene->addObject(cameraGO);
 
+	//add render system and post-processing passes
 	gameScene->addSystem(new RenderSystem());
 	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass( new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass( new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
 
-	gameObject* light  = makeDirectionalLight(
+	//Create scene lights
+	gameObject* dirLight = makeDirectionalLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 15.0f, 0.0f),	// position (visual only)
-		glm::vec3(0, -1.0f, 0.0f),		// direction (pointing down)
-		glm::vec3(1, 0, 0),				// color
-		1.0f,                           // intensity
-		1.0f,							// range
-		"Light_1"
+		glm::vec3(0.0f, 15.0f, 0.0f),
+		glm::vec3(0.0f, -1.0f, 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		1.0f, 1.0f, "Light_1"
 	);
-
-	gameScene->addObject(light);
-	//light->addComponent(new lightSpin(light));
+	gameScene->addObject(dirLight);
 
 	gameObject* pointLight = makeLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 3.0f, 0.0f),	// position (visual only)
-		glm::vec3(1, 0, 1),				// color
-		1.0f,                           // intensity
-		5.0f,							// range
-		"Light_2"
+		glm::vec3(0.0f, 3.0f, 3.0f),
+		glm::vec3(1.0f, 0.0f, 1.0f),
+		1.0f, 5.0f, "Light_2"
 	);
-
 	gameScene->addObject(pointLight);
 
-	// --- Models ---
+	//Load models
 	ShaderPass* modelShader = new ShaderPass("src/Shaders/object/model.frag", "src/Shaders/object/model.vert");
+	Material* modelMaterial = new Material(modelShader);
 
-	std::vector<gameObject*> sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelShader);
-	std::vector<gameObject*> bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelShader);
+	std::vector<gameObject*> sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelMaterial);
+	std::vector<gameObject*> bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelMaterial);
 
-	for (gameObject* go : sponza) {
+	for (gameObject* go : sponza)
 		gameScene->addObject(go);
-	}
 
 	for (gameObject* go : bunny) {
 		go->getComponent<Transform>()->setRotationX(90);
@@ -271,7 +275,6 @@ int main() {
 	}
 
 	// --- END OF SCENE SETUP ---
-
 
 	// --- START GAME LOOP ---
 	globalStart(gameScene);

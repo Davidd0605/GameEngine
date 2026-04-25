@@ -3,11 +3,10 @@
 
 Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
     int indices[], int indicesSize,
-    ShaderPass* shaderPass,
-    int stride, int noAttributes, int attributeSize[],
-    std::vector<std::string> texturePaths) {
+    Material* material,
+    int stride, int noAttributes, int attributeSize[]) {
 
-    this->shaderPass = shaderPass;
+    this->material = material;
     this->vertices = vertices;
     this->indices = indices;
     this->verticesSize = verticesSize;
@@ -22,18 +21,13 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
     vao->Unbind();
     if (vbo) vbo->Unbind();
     if (ebo) ebo->Unbind();
-
-    for (const auto& path : texturePaths) {
-        addTexture(path);
-    }
 }
 
 Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
-    ShaderPass* shaderPass,
-    int stride, int noAttributes, int attributeSize[],
-    std::vector<std::string> texturePaths) {
+    Material* material,
+    int stride, int noAttributes, int attributeSize[]) {
 
-    this->shaderPass = shaderPass;
+    this->material = material;
     this->vertices = vertices;
     this->verticesSize = verticesSize;
     this->indices = nullptr;
@@ -46,36 +40,6 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
     vbo = new VBO(vertices, verticesBytes, verticesSize, GL_STATIC_DRAW, stride, noAttributes, attributeSize);
     vao->Unbind();
     if (vbo) vbo->Unbind();
-
-    for (const auto& path : texturePaths) {
-        addTexture(path);
-    }
-}
-
-void Mesh::addTexture(const std::string& path) {
-    if (textures.size() >= 16) {
-        std::cerr << "ERROR :: TEXTURE CAPACITY EXCEEDED\n";
-        return;
-    }
-    textures.push_back(new Texture(path.c_str()));
-}
-
-void Mesh::addTexture(Texture* texture) {
-    if (textures.size() >= 16) {
-        std::cerr << "ERROR :: TEXTURE CAPACITY EXCEEDED\n";
-        return;
-    }
-    textures.push_back(texture);
-}
-
-std::vector<Texture*>& Mesh::getTextures() {
-    return textures;
-}
-
-void Mesh::bindTextures() const {
-    for (int i = 0; i < (int)textures.size(); i++) {
-        if (textures[i]) textures[i]->bind(i);
-    }
 }
 
 void Mesh::draw() {
@@ -88,7 +52,7 @@ void Mesh::draw() {
     }
 }
 
-ShaderPass* Mesh::getShaderPass() { return this->shaderPass; }
+Material* Mesh::getMaterial() { return this->material; }
 VAO* Mesh::getVAO() { return this->vao; }
 VBO* Mesh::getVBO() { return this->vbo; }
 EBO* Mesh::getEBO() { return this->ebo; }

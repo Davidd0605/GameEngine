@@ -1,7 +1,5 @@
 #include "RenderSystem.h"
 
-
-//hardcoded rectangle vertices for post-processing blit (NDC coords + UVs)
 float rectangleVertices[] =
 {
 	 1.0f, -1.0f,  1.0f, 0.0f,
@@ -13,11 +11,8 @@ float rectangleVertices[] =
 	-1.0f,  1.0f,  0.0f, 1.0f
 };
 
-
 GLuint rectVAO = 0;
 GLuint rectVBO = 0;
-
-// pingpong FBOs for post processing
 FBO* fbos[2];
 
 static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>& lights) {
@@ -31,7 +26,6 @@ static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>&
 
 		std::string base;
 		switch (light->getType()) {
-
 		case LightType::Point:
 			base = "pointLights[" + std::to_string(pointCount) + "]";
 			sp->setVec3(base + ".position", transform->getPosition());
@@ -49,11 +43,8 @@ static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>&
 			sp->setFloat(base + ".range", light->getRange());
 			dirCount++;
 			break;
-
-		// ADD HERE SUPPORT FOR MORE LIGHTS;
-
 		default:
-			std::cout << "Other light not recognized yet: " << base << "\n";
+			std::cout << "[RenderSystem] WARNING :: unrecognized light type on: " << lights[k]->name << "\n";
 			break;
 		}
 	}
@@ -64,12 +55,11 @@ static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>&
 
 void RenderSystem::start() {
 	ShaderPass* fsSP = new ShaderPass("src/Shaders/utility/plainFBO.frag", "src/Shaders/utility/plainFBO.vert");
-
-	// Add a default post-processing pass (can be overridden by user)
 	this->addPostProcessingShaderPass(fsSP);
 
 	fbos[0] = new FBO();
 	fbos[1] = new FBO();
+
 	glGenVertexArrays(1, &rectVAO);
 	glGenBuffers(1, &rectVBO);
 	glBindVertexArray(rectVAO);
@@ -83,17 +73,13 @@ void RenderSystem::start() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void RenderSystem::update() {
-	this->draw();
-}
-
+void RenderSystem::update() { this->draw(); }
 void RenderSystem::fixedUpdate() {}
 
 void RenderSystem::end() {
 	this->clearCurrentScene();
 	glDeleteVertexArrays(1, &rectVAO);
 	glDeleteBuffers(1, &rectVBO);
-
 	fbos[0]->Delete();
 	fbos[1]->Delete();
 }
@@ -107,27 +93,34 @@ void RenderSystem::blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp
 	glBindVertexArray(rectVAO);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	sp->setInt("screenTexture", 0);
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, depthID);
 	sp->setInt("depthTexture", 1);
+
+	// system uniforms
 	sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
 	sp->setMatrix4("cameraVP", currentScene->getMainCamera()->getComponent<Camera>()->getVPMatrix());
 	sp->setFloat("time", glfwGetTime());
-
 	uploadLightsToShader(sp, currentScene->getLights());
 
-	//draw fullscreen quad
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	sp->unbind();
+
+	//deactivate textures
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-// render all objects with their own shaders
 void RenderSystem::renderSceneObjects(gameObject* camGO) {
 	const std::vector<gameObject*>& gos = this->currentScene->getGameObjects();
 	Camera* cam = camGO->getComponent<Camera>();
@@ -136,37 +129,39 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 		Mesh* ms = go->getComponent<Mesh>();
 		if (ms == nullptr) continue;
 
-		ShaderPass* sp = ms->getShaderPass();
+		Material* mat = ms->getMaterial();
 		VAO* vao = ms->getVAO();
-		if (vao == nullptr || sp == nullptr) {
-			std::cerr << "ERROR :: NO VAO OR SHADERPASS, SKIPPING: " << go->name << "\n";
+
+		if (vao == nullptr || mat == nullptr) {
+			std::cerr << "[RenderSystem] ERROR :: NO VAO OR MATERIAL, SKIPPING: " << go->name << "\n";
 			continue;
 		}
 
-		sp->bind();
+		// bind material — uploads all material uniforms and textures, binds shader
+		mat->bind();
+
 		vao->Bind();
 
-		auto& textures = ms->getTextures();
-		for (int i = 0; i < (int)textures.size(); i++) {
-			textures[i]->bind(i);
-			sp->setInt("tex" + std::to_string(i), i);
-		}
+		// system uniforms — set after material bind, these are engine-owned
+		ShaderPass* sp = mat->getShaderPass();
 
-		glm::mat4 model = glm::mat4(1);
 		Transform* ts = go->getComponent<Transform>();
+		glm::mat4 model = glm::mat4(1.0f);
 		if (ts != nullptr) {
 			model = ts->getModel();
 		}
 		else {
-			std::cerr << "[RenderSystem] ERROR :: NO TRANSFORM ON: " << go->name << " USING DEFAULT BEHAVIOR;\n";
+			std::cerr << "[RenderSystem] WARNING :: NO TRANSFORM ON: " << go->name << ", USING IDENTITY\n";
 		}
 
-		sp->setFloat("time", glfwGetTime());
-		sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
-		sp->setVec3("viewPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
+		//system uniforms
 		sp->setMatrix4("model", model);
 		sp->setMatrix4("VP", cam->getVPMatrix());
+		sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
+		sp->setVec3("viewPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
+		sp->setFloat("time", glfwGetTime());
 
+		// light objects expose their color to the light shader
 		Light* lightComp = go->getComponent<Light>();
 		if (lightComp != nullptr)
 			sp->setVec3("color", lightComp->getColor());
@@ -174,21 +169,18 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 		uploadLightsToShader(sp, currentScene->getLights());
 
 		ms->draw();
-		sp->unbind();
+		mat->unbind();
 		vao->Unbind();
 	}
 }
 
-// Main draw function that handles rendering the scene with or without post-processing based on the main camera's settings
 void RenderSystem::draw() {
-	//fetch main camera
 	gameObject* mainCamGO = this->currentScene->getMainCamera();
 	Camera* mainCam = mainCamGO->getComponent<Camera>();
 
-	// render scene for all cameras that have an FBO (post-processing enabled) to their FBOs
+	// render to FBO for all post-processing cameras
 	for (auto cam : this->currentScene->getCameras()) {
 		if (cam->getComponent<Camera>()->postProcessing) {
-
 			cam->getComponent<Camera>()->getFBO()->Bind();
 			glEnable(GL_DEPTH_TEST);
 			glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -198,11 +190,7 @@ void RenderSystem::draw() {
 		}
 	}
 
-	// How we render
 	if (mainCam->postProcessing) {
-		// ping-pong between fbos[0] and fbos[1]
-
-		// first pass reads from the camera FBO
 		GLuint srcTexture = mainCam->getFBO()->getTexture()->ID;
 		GLuint dpthTexture = mainCam->getFBO()->getDepthTexture()->ID;
 
@@ -212,7 +200,6 @@ void RenderSystem::draw() {
 			int dstIndex = i % 2;
 
 			if (isLast) {
-				// Final pass: blit straight to the default framebuffer
 				blitToScreen(srcTexture, dpthTexture, postProcessingShaderPasses[i]);
 			}
 			else {
@@ -224,7 +211,6 @@ void RenderSystem::draw() {
 
 				ShaderPass* sp = postProcessingShaderPasses[i];
 				sp->bind();
-
 				glBindVertexArray(rectVAO);
 
 				glActiveTexture(GL_TEXTURE0);
@@ -238,7 +224,6 @@ void RenderSystem::draw() {
 				sp->setFloat("time", glfwGetTime());
 				sp->setVec3("mainCameraPos", currentScene->getMainCamera()->getComponent<Transform>()->getPosition());
 				sp->setMatrix4("cameraVP", currentScene->getMainCamera()->getComponent<Camera>()->getVPMatrix());
-
 				uploadLightsToShader(sp, currentScene->getLights());
 
 				glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -254,7 +239,6 @@ void RenderSystem::draw() {
 		}
 	}
 	else {
-		// no post processing just render directly to screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -263,14 +247,8 @@ void RenderSystem::draw() {
 	}
 }
 
-// UTILS
-void RenderSystem::setCurrentScene(GameScene* scene) {
-	this->currentScene = scene;
-}
-
-void RenderSystem::clearCurrentScene() {
-	this->currentScene = nullptr;
-}
+void RenderSystem::setCurrentScene(GameScene* scene) { this->currentScene = scene; }
+void RenderSystem::clearCurrentScene() { this->currentScene = nullptr; }
 
 void RenderSystem::addPostProcessingShaderPass(ShaderPass* sp) {
 	this->postProcessingShaderPasses.push_back(sp);
@@ -282,7 +260,7 @@ std::vector<ShaderPass*> RenderSystem::getPostProcessingShaderPasses() {
 
 void RenderSystem::clearPostProcessingShaderPasses() {
 	this->postProcessingShaderPasses.clear();
-	ShaderPass* fsSP = new ShaderPass("src/Shaders/utility/plainFBO.frag", "src/Shaders/utility/plainFBO.vert");
-
-	this->addPostProcessingShaderPass(fsSP);
+	this->addPostProcessingShaderPass(
+		new ShaderPass("src/Shaders/utility/plainFBO.frag", "src/Shaders/utility/plainFBO.vert")
+	);
 }
