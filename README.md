@@ -5,9 +5,9 @@
 
 ### Features
 
-- Entity componenent system
-- Support for simple post-processing shaders
-- Basic .gltf model loading compatible with the entity component system
+- Entity componenent system (allows for components and functionalities in order to decrease need for inheritance)
+- Support for simple post-processing shaders (support for stacking multiple post-processing effects)
+- Basic .gltf model loading compatible with the entity component system (material system)
 
 ### Post processign effects:
 - Volumetric fog (with scene light color blending)
