@@ -28,9 +28,6 @@
     <Filter Include="Source Files\Game Engine elements\General">
       <UniqueIdentifier>{90fd70d4-e1c9-405e-a202-05015a6ae612}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game Engine elements\Functionalities">
-      <UniqueIdentifier>{242abe82-9e41-4131-a4b0-a836d233909e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game Engine elements\Systems">
       <UniqueIdentifier>{c47564ae-eba4-4f2f-a45f-b75a35cc593d}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,21 @@
     </Filter>
     <Filter Include="Source Files\Game Engine elements\Utilities">
       <UniqueIdentifier>{60c59170-4090-4166-8cf7-27467dad324d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Functionalities">
+      <UniqueIdentifier>{dfa50d95-263d-4fdd-9289-3594ce37ad5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GeneralShit">
+      <UniqueIdentifier>{63b71ebd-30f2-48b0-817a-d921b439ae43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders\postprocessing">
+      <UniqueIdentifier>{5650c865-2c17-44a6-9d64-bbaa03ece046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders\object">
+      <UniqueIdentifier>{18547693-5505-4a84-a3c0-b56505911790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders\utility">
+      <UniqueIdentifier>{33dcc6a8-45b3-4b80-9869-2a9469570152}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -99,120 +111,120 @@
     <ClCompile Include="src\GameEngineCore\Rendering\ModelLoader.cpp">
       <Filter>Source Files\Game Engine elements\Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameEngineCore\Rendering\GPUobjects\FBO.cpp">
       <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Components\Light.cpp">
+      <Filter>Source Files\Game Engine elements\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\Shaders\basic.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\basic.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\model.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\model.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\light.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\light.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\plainFBO.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\plainFBO.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="src\Shaders\edgedetection.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="pixelation.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="bloom.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="volumetricFog.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\GameEngineCore\Components\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Scenes\GameScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Scenes\Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Utilities\Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Utilities\Time.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h">
+      <Filter>Header Files\Functionalities</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GeneralShit</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\Texture.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\GameEngineCore\Components\Component.h">
+      <Filter>Header Files\GeneralShit</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Functionalities\Functionality.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Rendering\ModelLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LightTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h">
+      <Filter>Header Files\GeneralShit</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\FBO.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GeneralShit</Filter>
     </ClInclude>
-    <ClInclude Include="lightSpin.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\GameEngineCore\Functionalities\Functionality.h">
+      <Filter>Header Files\GeneralShit</Filter>
     </ClInclude>
+    <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Scenes\GameScene.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Utilities\Input.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="LightTypes.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\ModelLoader.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Scenes\Scene.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\Texture.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Utilities\Time.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Transform.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Light.h">
+      <Filter>Header Files\GeneralShit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Functionalities\lightSpin.h">
+      <Filter>Header Files\Functionalities</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Shaders\utility\plainFBO.frag">
+      <Filter>Source Files\Shaders\utility</Filter>
+    </None>
+    <None Include="src\Shaders\utility\plainFBO.vert">
+      <Filter>Source Files\Shaders\utility</Filter>
+    </None>
+    <None Include="src\Shaders\object\basic.frag">
+      <Filter>Source Files\Shaders\object</Filter>
+    </None>
+    <None Include="src\Shaders\object\basic.vert">
+      <Filter>Source Files\Shaders\object</Filter>
+    </None>
+    <None Include="src\Shaders\object\light.frag">
+      <Filter>Source Files\Shaders\object</Filter>
+    </None>
+    <None Include="src\Shaders\object\light.vert">
+      <Filter>Source Files\Shaders\object</Filter>
+    </None>
+    <None Include="src\Shaders\object\model.frag">
+      <Filter>Source Files\Shaders\object</Filter>
+    </None>
+    <None Include="src\Shaders\object\model.vert">
+      <Filter>Source Files\Shaders\object</Filter>
+    </None>
+    <None Include="src\Shaders\postprocessing\bloom.frag">
+      <Filter>Source Files\Shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\Shaders\postprocessing\edgedetection.frag">
+      <Filter>Source Files\Shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\Shaders\postprocessing\pixelation.frag">
+      <Filter>Source Files\Shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\Shaders\postprocessing\volumetricFog.frag">
+      <Filter>Source Files\Shaders\postprocessing</Filter>
+    </None>
   </ItemGroup>
 </Project>

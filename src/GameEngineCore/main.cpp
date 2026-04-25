@@ -21,7 +21,8 @@
 #include "Utilities/Time.h"
 #include "Functionalities/CameraController.h"
 #include "Rendering/ModelLoader.h"
-#include "../../lightSpin.h"
+#include "Functionalities/lightSpin.h"
+
 #define elif else if
 
 GLFWwindow* window;
@@ -38,7 +39,7 @@ void windowResize(GLFWwindow* window, int width, int height) {
 
 void setupGL(GLFWwindow*& window) {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
@@ -59,15 +60,15 @@ void setupGL(GLFWwindow*& window) {
 		return;
 	}
 
+	//const char* version = (const char*)glGetString(GL_VERSION);
+	//printf("OpenGL version: %s\n", version);
+
 	glViewport(0, 0, globalWidth, globalHeight);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // when both stencil and depth tests pass, replace stencil value
 
 	//Backface culling
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CW);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 	glfwSetWindowSizeCallback(window, windowResize);
 	glfwSetScrollCallback(window, Input::scrollCallback);
 }
@@ -107,7 +108,7 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 			vertices,
 			vertexCount,
 			verticesBytes,
-			new ShaderPass("src/Shaders/basic.frag", "src/Shaders/basic.vert"),
+			new ShaderPass("src/Shaders/object/basic.frag", "src/Shaders/object/basic.vert"),
 			8,
 			3,
 			attributeSizes,
@@ -121,9 +122,7 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 
 	return go;
 }
-
-gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
-	glm::vec3 position, glm::vec3 color, float intensity, float range, std::string name)
+gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 color, float intensity, float range, std::string name)
 {
 	gameObject* go = new gameObject(name);
 	go->addComponent(new Transform());
@@ -131,13 +130,11 @@ gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int a
 	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
 	go->addComponent(new Light(LightType::Point, intensity, color, range));
 
-	ShaderPass* lightShader = new ShaderPass("src/Shaders/light.frag", "src/Shaders/light.vert");
+	ShaderPass* lightShader = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
 	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, lightShader, 8, 3, attributeSizes, {}));
 	return go;
 }
-
-gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[],
-	glm::vec3 position, glm::vec3 direction, glm::vec3 color, float intensity, float range, std::string name)
+gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesBytes, int attributeSizes[], glm::vec3 position, glm::vec3 direction, glm::vec3 color, float intensity, float range, std::string name)
 {
 	gameObject* go = new gameObject(name);
 	go->addComponent(new Transform());
@@ -145,10 +142,12 @@ gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesB
 	go->getComponent<Transform>()->setScale(glm::vec3(.3, .3, .3));
 	go->addComponent(new Light(LightType::Directional, intensity, color, range, direction));
 
-	ShaderPass* lightShader = new ShaderPass("src/Shaders/light.frag", "src/Shaders/light.vert");
+	ShaderPass* lightShader = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
 	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, lightShader, 8, 3, attributeSizes, {}));
 	return go;
 }
+
+
 
 int main() {
 
@@ -229,37 +228,37 @@ int main() {
 	gameScene->addObject(cameraGO);
 	gameScene->addSystem(new RenderSystem());
 	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/edgedetection.frag", "src/Shaders/plainFBO.vert"));
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("volumetricFog.frag", "src/Shaders/plainFBO.vert"));
-	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("pixelation.frag", "src/Shaders/plainFBO.vert"));
-	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("bloom.frag", "src/Shaders/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
+	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
+	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/pixelation.frag", "src/Shaders/utility/plainFBO.vert"));
+	//gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/bloom.frag", "src/Shaders/utility/plainFBO.vert"));
 
 	gameObject* light  = makeDirectionalLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 15.0f, 0.0f),	// position (visual only)
-		glm::vec3(-0.5f, -0.5f, 0.0f),		// direction (pointing down)
-		glm::vec3(1, 0, 0),	// color
+		glm::vec3(1, -1.0f, 0.0f),		// direction (pointing down)
+		glm::vec3(1, 0, 0),				// color
 		1.0f,                           // intensity
 		10.0f,                          // range
 		"Light_1"
 	);
 
 	gameScene->addObject(light);
-	light->addComponent(new lightSpin(light));
+	//light->addComponent(new lightSpin(light));
 
 	gameObject* pointLight = makeLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 3.0f, 0.0f),	// position (visual only)
-		glm::vec3(1, 0, 1),	// color
-		1.0f,                           // intensity
-		10.0f,                          // range
+		glm::vec3(1, 0, 1),				// color
+		10.0f,                           // intensity
+		10.0f,                         // range
 		"Light_2"
 	);
 
-	gameScene->addObject(pointLight);
+	//gameScene->addObject(pointLight);
 
 	// --- Models ---
-	ShaderPass* modelShader = new ShaderPass("src/Shaders/model.frag", "src/Shaders/model.vert");
+	ShaderPass* modelShader = new ShaderPass("src/Shaders/object/model.frag", "src/Shaders/object/model.vert");
 
 	std::vector<gameObject*> sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelShader);
 	std::vector<gameObject*> bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelShader);

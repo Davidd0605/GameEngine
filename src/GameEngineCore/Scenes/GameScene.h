@@ -7,12 +7,13 @@
 #include <algorithm>
 #include "../GameObjects/GameObject.h"
 #include "../Systems/GameSystem.h"
-#include "../../Light.h"
+#include "../Components/Light.h"
 
 /// <summary>
 /// Class for the game scene.
 /// Responsible for storing the game objects in the scene, as well as their update and render order.
 /// </summary>
+
 class GameScene : public Scene
 {
 public:

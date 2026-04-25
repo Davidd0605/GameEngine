@@ -1,7 +1,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
-#include "src/GameEngineCore/Components/Component.h"
-#include "LightTypes.h"
+#include "Component.h"
+#include "../Utilities/enums/LightTypes.h"
 #include <glm/glm.hpp>
 
 class Light : public Component {

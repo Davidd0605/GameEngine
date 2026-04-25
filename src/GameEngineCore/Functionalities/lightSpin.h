@@ -1,10 +1,10 @@
 #ifndef LIGHTSPIN_H
 #define LIGHTSPIN_H
 
-#include "src/GameEngineCore/Functionalities/Functionality.h"
-#include "src/GameEngineCore/GameObjects/GameObject.h"
-#include "src/GameEngineCore/Components/Transform.h"
-#include "Light.h"
+#include "../Functionalities/Functionality.h"
+#include "../GameObjects/GameObject.h"
+#include "../Components/Transform.h"
+#include "../Components/Light.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -38,7 +38,6 @@ public:
         glm::vec3 newDir = glm::normalize(glm::vec3(rot * glm::vec4(dir, 0.0)));
 
         light->setDirection(newDir);
-        std::cout << "Light rotated\n";
     }
 
     void end() override {}

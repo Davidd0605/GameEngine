@@ -134,8 +134,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Camera.cpp" />
+    <ClCompile Include="src\GameEngineCore\Components\Light.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Transform.cpp" />
     <ClCompile Include="src\GameEngineCore\GameObjects\GameObject.cpp" />
@@ -155,29 +155,15 @@
     <ClCompile Include="stb.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bloom.frag" />
-    <None Include="pixelation.frag" />
-    <None Include="src\Shaders\basic.frag" />
-    <None Include="src\Shaders\basic.vert" />
-    <None Include="src\Shaders\edgedetection.frag" />
-    <None Include="src\Shaders\light.frag" />
-    <None Include="src\Shaders\light.vert" />
-    <None Include="src\Shaders\model.frag" />
-    <None Include="src\Shaders\model.vert" />
-    <None Include="src\Shaders\plainFBO.frag" />
-    <None Include="src\Shaders\plainFBO.vert" />
-    <None Include="volumetricFog.frag" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="lightSpin.h" />
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="src\GameEngineCore\Components\Camera.h" />
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />
+    <ClInclude Include="src\GameEngineCore\Components\Light.h" />
     <ClInclude Include="src\GameEngineCore\Components\Mesh.h" />
     <ClInclude Include="src\GameEngineCore\Components\Transform.h" />
     <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h" />
     <ClInclude Include="src\GameEngineCore\Functionalities\Functionality.h" />
+    <ClInclude Include="src\GameEngineCore\Functionalities\lightSpin.h" />
     <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h" />
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\FBO.h" />
@@ -192,6 +178,20 @@
     <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Input.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Time.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Shaders\object\basic.frag" />
+    <None Include="src\Shaders\object\basic.vert" />
+    <None Include="src\Shaders\object\light.frag" />
+    <None Include="src\Shaders\object\light.vert" />
+    <None Include="src\Shaders\object\model.frag" />
+    <None Include="src\Shaders\object\model.vert" />
+    <None Include="src\Shaders\postprocessing\bloom.frag" />
+    <None Include="src\Shaders\postprocessing\edgedetection.frag" />
+    <None Include="src\Shaders\postprocessing\pixelation.frag" />
+    <None Include="src\Shaders\postprocessing\volumetricFog.frag" />
+    <None Include="src\Shaders\utility\plainFBO.frag" />
+    <None Include="src\Shaders\utility\plainFBO.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
