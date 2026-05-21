@@ -15,8 +15,47 @@ GLuint rectVAO = 0;
 GLuint rectVBO = 0;
 FBO* fbos[2];
 
+//--------UTILITY FUNCTIONS -----------//
+static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>& lights) {
+	int dirCount = 0;
+	int pointCount = 0;
+
+	for (int k = 0; k < (int)lights.size() && dirCount < 32; k++) {
+		Light* light = lights[k]->getComponent<Light>();
+		Transform* transform = lights[k]->getComponent<Transform>();
+		if (!light || !transform) continue;
+
+		std::string base;
+		switch (light->getType()) {
+		case LightType::Point:
+			base = "pointLights[" + std::to_string(pointCount) + "]";
+			sp->setVec3(base + ".position", transform->getPosition());
+			sp->setVec3(base + ".color", light->getColor());
+			sp->setFloat(base + ".intensity", light->getIntensity());
+			sp->setFloat(base + ".range", light->getRange());
+			pointCount++;
+			break;
+		case LightType::Directional:
+			base = "dirLights[" + std::to_string(dirCount) + "]";
+			sp->setVec3(base + ".position", transform->getPosition());
+			sp->setVec3(base + ".direction", light->getDirection());
+			sp->setVec3(base + ".color", light->getColor());
+			sp->setFloat(base + ".intensity", light->getIntensity());
+			sp->setFloat(base + ".range", light->getRange());
+			dirCount++;
+			break;
+		default:
+			std::cout << "[RenderSystem] WARNING :: unrecognized light type on: " << lights[k]->name << "\n";
+			break;
+		}
+	}
+
+	sp->setInt("pointLightCount", pointCount);
+	sp->setInt("dirLightCount", dirCount);
+}
 
 
+//------------------- LIFECYCLE ------------------//
 void RenderSystem::start() {
 	ShaderPass* fsSP = new ShaderPass("src/Shaders/utility/plainFBO.frag", "src/Shaders/utility/plainFBO.vert");
 	this->addPostProcessingShaderPass(fsSP);
@@ -247,41 +286,3 @@ void RenderSystem::clearPostProcessingShaderPasses() {
 	);
 }
 
-//--------UTILITY FUNCTIONS -----------//
-static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>& lights) {
-	int dirCount = 0;
-	int pointCount = 0;
-
-	for (int k = 0; k < (int)lights.size() && dirCount < 32; k++) {
-		Light* light = lights[k]->getComponent<Light>();
-		Transform* transform = lights[k]->getComponent<Transform>();
-		if (!light || !transform) continue;
-
-		std::string base;
-		switch (light->getType()) {
-		case LightType::Point:
-			base = "pointLights[" + std::to_string(pointCount) + "]";
-			sp->setVec3(base + ".position", transform->getPosition());
-			sp->setVec3(base + ".color", light->getColor());
-			sp->setFloat(base + ".intensity", light->getIntensity());
-			sp->setFloat(base + ".range", light->getRange());
-			pointCount++;
-			break;
-		case LightType::Directional:
-			base = "dirLights[" + std::to_string(dirCount) + "]";
-			sp->setVec3(base + ".position", transform->getPosition());
-			sp->setVec3(base + ".direction", light->getDirection());
-			sp->setVec3(base + ".color", light->getColor());
-			sp->setFloat(base + ".intensity", light->getIntensity());
-			sp->setFloat(base + ".range", light->getRange());
-			dirCount++;
-			break;
-		default:
-			std::cout << "[RenderSystem] WARNING :: unrecognized light type on: " << lights[k]->name << "\n";
-			break;
-		}
-	}
-
-	sp->setInt("pointLightCount", pointCount);
-	sp->setInt("dirLightCount", dirCount);
-}
