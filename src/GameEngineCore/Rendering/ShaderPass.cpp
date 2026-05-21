@@ -226,3 +226,28 @@ void ShaderPass::setMatrix4(const std::string& name, glm::mat4 value) const
 	bind();	
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
+
+std::vector<UniformInfo> ShaderPass::getMaterialUniforms() const {
+	std::vector<UniformInfo> result;
+
+	GLint uniformCount;
+	glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+	for (int i = 0; i < uniformCount; i++) {
+		char name[256];
+		GLint size;
+		GLenum type;
+		glGetActiveUniform(ID, i, sizeof(name), nullptr, &size, &type, name);
+
+		// only material uniforms
+		if (name[0] != '_') continue;
+
+		UniformInfo info;
+		info.name = std::string(name);
+		info.type = type;
+		info.location = glGetUniformLocation(ID, name);
+		result.push_back(info);
+	}
+
+	return result;
+}

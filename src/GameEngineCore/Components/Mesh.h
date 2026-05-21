@@ -5,47 +5,44 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <string>
-#include "../Rendering/ShaderPass.h"
+#include "../Rendering/Material.h"
 #include "../Rendering/GPUobjects/VAO.h"
 #include "../Rendering/GPUobjects/VBO.h"
 #include "../Rendering/GPUobjects/EBO.h"
-#include "../Rendering/Texture.h"
 #include "Component.h"
 #include <iostream>
 
 /// <summary>
 /// Mesh component.
-/// Stores vertex/index data, shader and a list of textures.
-/// Textures can be passed as paths at construction or added after via addTexture().
+/// Stores vertex/index data and a Material.
+/// Material owns the shader and textures.
 /// RenderSystem handles binding and drawing.
 /// </summary>
 class Mesh : public Component {
 public:
-    // With indices
+    // with indices
     Mesh(float vertices[], int verticesSize, int verticesBytes,
         int indices[], int indicesSize,
-        ShaderPass* shaderPass,
-        int stride, int noAttributes, int attributeSize[],
-        std::vector<std::string> texturePaths = {});
+        Material* material,
+        int stride, int noAttributes, int attributeSize[]);
 
-    // Without indices
-    Mesh(float vertices[], int sizeofVertices, int verticesSize,
-        ShaderPass* shaderPass,
-        int stride, int noAttributes, int attributeSize[],
-        std::vector<std::string> texturePaths = {});
-
-    // Textures
-    void addTexture(const std::string& path);
-    void addTexture(Texture* texture);
-    std::vector<Texture*>& getTextures();
-    void bindTextures() const;
+    // without indices
+    Mesh(float vertices[], int verticesSize, int verticesBytes,
+        Material* material,
+        int stride, int noAttributes, int attributeSize[]);
 
     void draw();
 
-    ShaderPass* getShaderPass();
+    Material* getMaterial();
     VAO* getVAO();
     VBO* getVBO();
     EBO* getEBO();
+
+    // expose raw data for raytracer later
+    float* getVertices() { return vertices; }
+    int* getIndices() { return indices; }
+    int getVerticesSize() { return verticesSize; }
+    int getIndicesSize() { return indicesSize; }
 
     void start() override;
     void update() override;
@@ -57,15 +54,13 @@ private:
     VBO* vbo;
     VAO* vao;
 
-    std::vector<Texture*> textures;
-
     float* vertices;
     int verticesSize;
 
     int* indices;
     int indicesSize;
 
-    ShaderPass* shaderPass;
+    Material* material;
 };
 
 #endif

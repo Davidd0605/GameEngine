@@ -12,6 +12,7 @@
 #include "../GameObjects/GameObject.h"
 #include "../Components/Transform.h"
 #include "../Components/Mesh.h"
+#include "../Rendering/Material.h"
 #include "../Rendering/ShaderPass.h"
 #include "../Rendering/Texture.h"
 
@@ -19,17 +20,15 @@ using json = nlohmann::json;
 
 class ModelLoader {
 public:
-    // Loads a GLTF model and returns all spawned gameObjects
-    // Caller is responsible for adding them to a scene or managing their lifetime
-    static std::vector<gameObject*> load(const char* filePath, ShaderPass* shader);
+    static std::vector<gameObject*> load(const char* filePath, Material* material);
 
 private:
     struct Context {
         json JSON;
         std::vector<unsigned char> binaryData;
         std::string fileDirectory;
-        ShaderPass* shader;
-        std::vector<gameObject*> result; // collected game objects
+        Material* material;
+        std::vector<gameObject*> result;
 
         std::vector<Texture*> loadedTextures;
         std::vector<std::string> loadedTextureNames;
@@ -38,7 +37,7 @@ private:
     static void traverseNode(Context& ctx, unsigned int nodeIndex, glm::mat4 parentMatrix);
     static void loadMesh(Context& ctx, unsigned int meshIndex, glm::mat4 matrix);
 
-    static void getTexturesForMaterial(Context& ctx, unsigned int matIndex, Mesh* mesh);
+    static void getTexturesForMaterial(Context& ctx, unsigned int matIndex, Material* material);
     static Texture* loadTexture(Context& ctx, unsigned int texIndex);
 
     static std::vector<unsigned char> getBinaryData(Context& ctx);

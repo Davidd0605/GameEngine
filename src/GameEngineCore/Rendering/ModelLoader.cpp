@@ -3,9 +3,9 @@
 #include <sstream>
 #include <iostream>
 
-std::vector<gameObject*> ModelLoader::load(const char* filePath, ShaderPass* shader) {
+std::vector<gameObject*> ModelLoader::load(const char* filePath, Material* material) {
     Context ctx;
-    ctx.shader = shader;
+    ctx.material = material;
 
     std::string fileStr = std::string(filePath);
     ctx.fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
@@ -37,7 +37,6 @@ void ModelLoader::traverseNode(Context& ctx, unsigned int nodeIndex, glm::mat4 p
         );
     }
 
-    // GLTF quaternion is [x, y, z, w], GLM is quat(w, x, y, z)
     glm::quat rotation(1.0f, 0.0f, 0.0f, 0.0f);
     if (node.find("rotation") != node.end()) {
         rotation = glm::quat(
@@ -57,7 +56,6 @@ void ModelLoader::traverseNode(Context& ctx, unsigned int nodeIndex, glm::mat4 p
         );
     }
 
-    // GLTF matrices are column-major, same as GLM
     glm::mat4 matNode(1.0f);
     if (node.find("matrix") != node.end()) {
         float vals[16];
@@ -112,9 +110,8 @@ void ModelLoader::loadMesh(Context& ctx, unsigned int meshIndex, glm::mat4 matri
         if (primitive["attributes"].find("TEXCOORD_0") != primitive["attributes"].end()) {
             unsigned int texAccInd = primitive["attributes"]["TEXCOORD_0"];
             std::vector<float> texVec = getFloats(ctx, ctx.JSON["accessors"][texAccInd]);
-            for (unsigned int i = 0; i < texVec.size(); i += 2) {
+            for (unsigned int i = 0; i < texVec.size(); i += 2)
                 texUVs.push_back(glm::vec2(texVec[i], texVec[i + 1]));
-            }
         }
         else {
             texUVs.resize(positions.size(), glm::vec2(0.0f));
@@ -145,23 +142,23 @@ void ModelLoader::loadMesh(Context& ctx, unsigned int meshIndex, glm::mat4 matri
 
         int* attrSizes = new int[3] { 3, 3, 2 };
 
+        // each primitive gets its own material copy so textures don't bleed
+        Material* primMaterial = new Material(*ctx.material);
+
+        if (primitive.find("material") != primitive.end()) {
+            unsigned int matIndex = primitive["material"];
+            getTexturesForMaterial(ctx, matIndex, primMaterial);
+        }
+
         Mesh* mesh = new Mesh(
             vertexData,
             (int)vertices.size(),
             (int)(vertices.size() * sizeof(float)),
             indexData,
             (int)indices.size(),
-            ctx.shader,
-            8,
-            3,
-            attrSizes
+            primMaterial,
+            8, 3, attrSizes
         );
-
-        // --- Textures for this primitive's material only ---
-        if (primitive.find("material") != primitive.end()) {
-            unsigned int matIndex = primitive["material"];
-            getTexturesForMaterial(ctx, matIndex, mesh);
-        }
 
         // --- Create gameObject ---
         gameObject* go = new gameObject(meshName + "_" + std::to_string(p));
@@ -169,7 +166,6 @@ void ModelLoader::loadMesh(Context& ctx, unsigned int meshIndex, glm::mat4 matri
         go->addComponent(transform);
         go->addComponent(mesh);
 
-        // Decompose matrix into TRS for Transform
         glm::vec3 pos = glm::vec3(matrix[3]);
         glm::vec3 scl = glm::vec3(
             glm::length(glm::vec3(matrix[0])),
@@ -195,31 +191,32 @@ void ModelLoader::loadMesh(Context& ctx, unsigned int meshIndex, glm::mat4 matri
     }
 }
 
-void ModelLoader::getTexturesForMaterial(Context& ctx, unsigned int matIndex, Mesh* mesh) {
+void ModelLoader::getTexturesForMaterial(Context& ctx, unsigned int matIndex, Material* material) {
     if (ctx.JSON.find("materials") == ctx.JSON.end()) return;
 
-    json material = ctx.JSON["materials"][matIndex];
+    json matJSON = ctx.JSON["materials"][matIndex];
+    int slot = 0;
 
-    if (material.find("pbrMetallicRoughness") != material.end()) {
-        json pbr = material["pbrMetallicRoughness"];
+    if (matJSON.find("pbrMetallicRoughness") != matJSON.end()) {
+        json pbr = matJSON["pbrMetallicRoughness"];
 
         if (pbr.find("baseColorTexture") != pbr.end()) {
             unsigned int texIndex = pbr["baseColorTexture"]["index"];
             Texture* tex = loadTexture(ctx, texIndex);
-            if (tex) mesh->addTexture(tex);
+            if (tex) material->setTexture(slot++, tex);
         }
 
         if (pbr.find("metallicRoughnessTexture") != pbr.end()) {
             unsigned int texIndex = pbr["metallicRoughnessTexture"]["index"];
             Texture* tex = loadTexture(ctx, texIndex);
-            if (tex) mesh->addTexture(tex);
+            if (tex) material->setTexture(slot++, tex);
         }
     }
 
-    if (material.find("normalTexture") != material.end()) {
-        unsigned int texIndex = material["normalTexture"]["index"];
+    if (matJSON.find("normalTexture") != matJSON.end()) {
+        unsigned int texIndex = matJSON["normalTexture"]["index"];
         Texture* tex = loadTexture(ctx, texIndex);
-        if (tex) mesh->addTexture(tex);
+        if (tex) material->setTexture(slot++, tex);
     }
 }
 
@@ -233,9 +230,8 @@ Texture* ModelLoader::loadTexture(Context& ctx, unsigned int texIndex) {
     std::string texPath = ctx.JSON["images"][imageIndex]["uri"];
 
     for (unsigned int j = 0; j < ctx.loadedTextureNames.size(); j++) {
-        if (ctx.loadedTextureNames[j] == texPath) {
+        if (ctx.loadedTextureNames[j] == texPath)
             return ctx.loadedTextures[j];
-        }
     }
 
     std::string fullPath = ctx.fileDirectory + texPath;

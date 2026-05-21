@@ -43,9 +43,6 @@
     <Filter Include="Header Files\Functionalities">
       <UniqueIdentifier>{dfa50d95-263d-4fdd-9289-3594ce37ad5c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\GeneralShit">
-      <UniqueIdentifier>{63b71ebd-30f2-48b0-817a-d921b439ae43}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Shaders\postprocessing">
       <UniqueIdentifier>{5650c865-2c17-44a6-9d64-bbaa03ece046}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,9 @@
     </Filter>
     <Filter Include="Source Files\Shaders\utility">
       <UniqueIdentifier>{33dcc6a8-45b3-4b80-9869-2a9469570152}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\General">
+      <UniqueIdentifier>{63b71ebd-30f2-48b0-817a-d921b439ae43}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -117,76 +117,82 @@
     <ClCompile Include="src\GameEngineCore\Components\Light.cpp">
       <Filter>Source Files\Game Engine elements\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameEngineCore\Rendering\Material.cpp">
+      <Filter>Source Files\GPU Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h">
       <Filter>Header Files\Functionalities</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Camera.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Component.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\FBO.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Functionalities\Functionality.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\GameObjects\GameObject.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Scenes\GameScene.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Utilities\Input.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="LightTypes.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\ModelLoader.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Scenes\Scene.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\ShaderPass.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\Texture.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Utilities\Time.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Transform.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Light.h">
-      <Filter>Header Files\GeneralShit</Filter>
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Functionalities\lightSpin.h">
       <Filter>Header Files\Functionalities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Rendering\Material.h">
+      <Filter>Header Files\General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
