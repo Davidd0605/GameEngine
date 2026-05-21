@@ -15,43 +15,7 @@ GLuint rectVAO = 0;
 GLuint rectVBO = 0;
 FBO* fbos[2];
 
-static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>& lights) {
-	int dirCount = 0;
-	int pointCount = 0;
 
-	for (int k = 0; k < (int)lights.size() && dirCount < 32; k++) {
-		Light* light = lights[k]->getComponent<Light>();
-		Transform* transform = lights[k]->getComponent<Transform>();
-		if (!light || !transform) continue;
-
-		std::string base;
-		switch (light->getType()) {
-		case LightType::Point:
-			base = "pointLights[" + std::to_string(pointCount) + "]";
-			sp->setVec3(base + ".position", transform->getPosition());
-			sp->setVec3(base + ".color", light->getColor());
-			sp->setFloat(base + ".intensity", light->getIntensity());
-			sp->setFloat(base + ".range", light->getRange());
-			pointCount++;
-			break;
-		case LightType::Directional:
-			base = "dirLights[" + std::to_string(dirCount) + "]";
-			sp->setVec3(base + ".position", transform->getPosition());
-			sp->setVec3(base + ".direction", light->getDirection());
-			sp->setVec3(base + ".color", light->getColor());
-			sp->setFloat(base + ".intensity", light->getIntensity());
-			sp->setFloat(base + ".range", light->getRange());
-			dirCount++;
-			break;
-		default:
-			std::cout << "[RenderSystem] WARNING :: unrecognized light type on: " << lights[k]->name << "\n";
-			break;
-		}
-	}
-
-	sp->setInt("pointLightCount", pointCount);
-	sp->setInt("dirLightCount", dirCount);
-}
 
 void RenderSystem::start() {
 	ShaderPass* fsSP = new ShaderPass("src/Shaders/utility/plainFBO.frag", "src/Shaders/utility/plainFBO.vert");
@@ -84,6 +48,12 @@ void RenderSystem::end() {
 	fbos[1]->Delete();
 }
 
+/// <summary>
+/// Blits a texture to the screen using a full-screen quad and a specified shader pass.
+/// </summary>
+/// <param name="textureID"></param>
+/// <param name="depthID"></param>
+/// <param name="sp"></param>
 void RenderSystem::blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -121,6 +91,10 @@ void RenderSystem::blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+/// <summary>
+/// Renders all GOs in scene from perspective of certain camera.
+/// </summary>
+/// <param name="camGO"></param>
 void RenderSystem::renderSceneObjects(gameObject* camGO) {
 	const std::vector<gameObject*>& gos = this->currentScene->getGameObjects();
 	Camera* cam = camGO->getComponent<Camera>();
@@ -174,6 +148,9 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 	}
 }
 
+/// <summary>
+/// Main draw function of the render system
+/// </summary>
 void RenderSystem::draw() {
 	gameObject* mainCamGO = this->currentScene->getMainCamera();
 	Camera* mainCam = mainCamGO->getComponent<Camera>();
@@ -247,9 +224,14 @@ void RenderSystem::draw() {
 	}
 }
 
+
+
+//------------------- SCENE MANAGEMENT ------------------//
 void RenderSystem::setCurrentScene(GameScene* scene) { this->currentScene = scene; }
 void RenderSystem::clearCurrentScene() { this->currentScene = nullptr; }
 
+
+//------------------- POST-PROCESSING MANAGEMENT ------------------//
 void RenderSystem::addPostProcessingShaderPass(ShaderPass* sp) {
 	this->postProcessingShaderPasses.push_back(sp);
 }
@@ -263,4 +245,43 @@ void RenderSystem::clearPostProcessingShaderPasses() {
 	this->addPostProcessingShaderPass(
 		new ShaderPass("src/Shaders/utility/plainFBO.frag", "src/Shaders/utility/plainFBO.vert")
 	);
+}
+
+//--------UTILITY FUNCTIONS -----------//
+static void uploadLightsToShader(ShaderPass* sp, const std::vector<gameObject*>& lights) {
+	int dirCount = 0;
+	int pointCount = 0;
+
+	for (int k = 0; k < (int)lights.size() && dirCount < 32; k++) {
+		Light* light = lights[k]->getComponent<Light>();
+		Transform* transform = lights[k]->getComponent<Transform>();
+		if (!light || !transform) continue;
+
+		std::string base;
+		switch (light->getType()) {
+		case LightType::Point:
+			base = "pointLights[" + std::to_string(pointCount) + "]";
+			sp->setVec3(base + ".position", transform->getPosition());
+			sp->setVec3(base + ".color", light->getColor());
+			sp->setFloat(base + ".intensity", light->getIntensity());
+			sp->setFloat(base + ".range", light->getRange());
+			pointCount++;
+			break;
+		case LightType::Directional:
+			base = "dirLights[" + std::to_string(dirCount) + "]";
+			sp->setVec3(base + ".position", transform->getPosition());
+			sp->setVec3(base + ".direction", light->getDirection());
+			sp->setVec3(base + ".color", light->getColor());
+			sp->setFloat(base + ".intensity", light->getIntensity());
+			sp->setFloat(base + ".range", light->getRange());
+			dirCount++;
+			break;
+		default:
+			std::cout << "[RenderSystem] WARNING :: unrecognized light type on: " << lights[k]->name << "\n";
+			break;
+		}
+	}
+
+	sp->setInt("pointLightCount", pointCount);
+	sp->setInt("dirLightCount", dirCount);
 }
