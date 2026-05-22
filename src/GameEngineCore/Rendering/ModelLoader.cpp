@@ -3,7 +3,12 @@
 #include <sstream>
 #include <iostream>
 
-std::vector<gameObject*> ModelLoader::load(const char* filePath, Material* material) {
+gameObject* ModelLoader::load(const char* filePath, Material* material) {
+
+	gameObject* parentObject = new gameObject(std::string(filePath).substr(std::string(filePath).find_last_of('/') + 1), filePath);
+	parentObject->addComponent(new Transform()); // parent object only has transform, "empty object"
+	// from transform we should be able to fetch all children transforms/gameObjects for rendering and other purposes
+
     Context ctx;
     ctx.material = material;
 
@@ -22,12 +27,21 @@ std::vector<gameObject*> ModelLoader::load(const char* filePath, Material* mater
     }
 
     std::cout << "[ModelLoader] Loaded: " << filePath << " (" << ctx.result.size() << " objects)\n";
-    return ctx.result;
+	std::cout << "[ModelLoader] Parent object: " << parentObject->name << "\n";
+	//ctx.result contains all game objects created from the model, we need to parent them to the parentObject and return it
+    //parent them 
+    for (auto go : ctx.result) {
+		parentObject->getComponent<Transform>()->addChild(go->getComponent<Transform>());
+	}
+
+    //return parent
+    return parentObject;
 }
 
 void ModelLoader::traverseNode(Context& ctx, unsigned int nodeIndex, glm::mat4 parentMatrix) {
     json node = ctx.JSON["nodes"][nodeIndex];
 
+    // Get transform data of child
     glm::vec3 translation(0.0f);
     if (node.find("translation") != node.end()) {
         translation = glm::vec3(

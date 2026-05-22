@@ -157,6 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightTypes.h" />
+    <ClInclude Include="SceneLoader.h" />
+    <ClInclude Include="SceneSerializer.h" />
+    <ClInclude Include="Spin.h" />
     <ClInclude Include="src\GameEngineCore\Components\Camera.h" />
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />
     <ClInclude Include="src\GameEngineCore\Components\Light.h" />

@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
-gameObject::gameObject(std::string name) {
+gameObject::gameObject(std::string name, std::string modelPath) {
+	this->modelPath = modelPath;
 	this->name = name;
 }
 

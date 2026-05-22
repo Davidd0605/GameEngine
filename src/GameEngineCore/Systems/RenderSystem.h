@@ -46,7 +46,10 @@ protected:
 private:
     void renderSceneObjects(gameObject* camGO);
     void blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp);
-	std::vector<ShaderPass*> postProcessingShaderPasses;
+    void onResize(int width, int height);  
+	std::vector<ShaderPass*> postProcessingShaderPasses;      
+    int currentWidth = 0;                
+    int currentHeight = 0;                 
 };
 
 #endif

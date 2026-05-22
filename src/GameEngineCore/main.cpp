@@ -25,6 +25,7 @@
 #include "Functionalities/lightSpin.h"
 #include "Components/Light.h"
 #include "Rendering/Material.h"
+#include "../../Spin.h"
 
 #define elif else if
 
@@ -112,7 +113,7 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 
 	ShaderPass* sp = new ShaderPass("src/Shaders/object/basic.frag", "src/Shaders/object/basic.vert");
 	Material* mat = new Material(sp);
-	//mat->setTexture(0, "resources/textures/damian.jpeg");
+	mat->setTexture(0, "resources/textures/damian.jpeg");
 
 
 	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
@@ -162,7 +163,7 @@ int main() {
 	// --- START OF SCENE SETUP ---
 	setupGL(window);
 
-	GameScene* gameScene = new GameScene("Test game scene 1");
+	GameScene* gameScene = new GameScene("Test game scene 1", window);
 
 	// x, y, z,   nx, ny, nz,   u, v
 	float cubeVertices[] = {
@@ -211,42 +212,44 @@ int main() {
 	};
 	int attributeSizes[] = { 3, 3, 2 }; // pos, normal, uv
 
-	//some random objects
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
+	////some random objects
+	//gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+	//	glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
 
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(-3.0f, 0.0f, -5.0f), glm::vec3(30.0f, 45.0f, 0.0f), "Cube_Left"));
+	//gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+	//	glm::vec3(-3.0f, 0.0f, -5.0f), glm::vec3(30.0f, 45.0f, 0.0f), "Cube_Left"));
 
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(3.0f, 0.0f, -5.0f), glm::vec3(-20.0f, 60.0f, 0.0f), "Cube_Right"));
+	//gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+	//	glm::vec3(3.0f, 0.0f, -5.0f), glm::vec3(-20.0f, 60.0f, 0.0f), "Cube_Right"));
 
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 2.5f, -7.0f), glm::vec3(45.0f, 15.0f, 0.0f), "Cube_Top"));
+	//gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+	//	glm::vec3(0.0f, 2.5f, -7.0f), glm::vec3(45.0f, 15.0f, 0.0f), "Cube_Top"));
 
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
+	//gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+	//	glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
 
 	//main camera
 	gameObject* cameraGO = new gameObject("MainCamera");
 	cameraGO->addComponent(new Transform());
-	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f, 0, true));
+	// to this:
+	cameraGO->addComponent(new Camera(45.0f, globalWidth / globalHeight, 0.1f, 100.0f, 0, true));
 	cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 	cameraGO->addComponent(new CameraController(5.0f));
 	gameScene->addObject(cameraGO);
 
 	//add render system and post-processing passes
-	gameScene->addSystem(new RenderSystem());
-	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass( new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass( new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
-
+	RenderSystem* rs = new RenderSystem();
+	gameScene->addSystem(rs);
+	rs->postProcessingEnabled = true;
+	//rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
+	rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
+	rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/painting.frag", "src/Shaders/utility/plainFBO.vert"));
 	//Create scene lights
 	gameObject* dirLight = makeDirectionalLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 15.0f, 0.0f),
+		glm::vec3(-1.0f, 5.0f, -1.0f),
 		glm::vec3(0.0f, -1.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
 		1.0f, 1.0f, "Light_1"
 	);
 	gameScene->addObject(dirLight);
@@ -254,7 +257,7 @@ int main() {
 	gameObject* pointLight = makeLight(
 		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 		glm::vec3(0.0f, 3.0f, 3.0f),
-		glm::vec3(1.0f, 0.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
 		1.0f, 5.0f, "Light_2"
 	);
 	gameScene->addObject(pointLight);
@@ -263,16 +266,31 @@ int main() {
 	ShaderPass* modelShader = new ShaderPass("src/Shaders/object/model.frag", "src/Shaders/object/model.vert");
 	Material* modelMaterial = new Material(modelShader);
 
-	std::vector<gameObject*> sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelMaterial);
-	std::vector<gameObject*> bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelMaterial);
+	//returns parent object of model,
+	//parent object should only have transform component, and all meshes are children of it.
+	gameObject* sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelMaterial);
+	gameObject* bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelMaterial);
+	gameObject* room = ModelLoader::load("resources/models/room/room.gltf", modelMaterial);
 
-	for (gameObject* go : sponza)
-		gameScene->addObject(go);
 
-	for (gameObject* go : bunny) {
-		go->getComponent<Transform>()->setRotationX(90);
+	sponza->addComponent(new Spin());
+	std::vector<gameObject*> sponzaChildren = sponza->getComponent<Transform>()->getChildrenGameObjects();
+
+	sponza->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 10.0f, -5.0f));
+	sponza->getComponent<Transform>()->setRotationZ(75.0f);
+
+	//gameScene->addObject(sponza);
+	//for (gameObject* go : sponzaChildren) {
+	//	gameScene->addObject(go);
+	//}
+
+	gameScene->addObject(room);
+	std::vector<gameObject*> roomChildren = room->getComponent<Transform>()->getChildrenGameObjects();	
+	for (gameObject* go : roomChildren) {
 		gameScene->addObject(go);
 	}
+
+
 
 	// --- END OF SCENE SETUP ---
 

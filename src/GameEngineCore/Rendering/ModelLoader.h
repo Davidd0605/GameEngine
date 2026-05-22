@@ -20,7 +20,7 @@ using json = nlohmann::json;
 
 class ModelLoader {
 public:
-    static std::vector<gameObject*> load(const char* filePath, Material* material);
+    static gameObject* load(const char* filePath, Material* material);
 
 private:
     struct Context {

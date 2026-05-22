@@ -18,13 +18,14 @@ class gameObject {
 public:
 	std::string name;
 
-	gameObject(std::string name);
+	gameObject(std::string name, std::string modelPath = "");
 	void start();
 	void update();
 	void fixedUpdate();
 	void end();
 	void render();
 
+	std::string modelPath = "";
 	void addComponent(Component* component);
 
 	template<typename T> T* getComponent() {
@@ -45,6 +46,8 @@ public:
 		}
 		return nullptr;
 	}
+
+	//function for serialization of game objects TBA
 
 private:
 	std::vector<gameObject*> children;
