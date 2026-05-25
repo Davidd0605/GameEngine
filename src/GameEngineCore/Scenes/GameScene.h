@@ -42,6 +42,8 @@ public:
         return nullptr;
     }
 
+	std::string serialize() override;
+    void deserialize(std::string data) override { return; };
 private:
     std::vector<gameObject*> gameObjects;
     std::vector<GameSystem*> systems;

@@ -4,6 +4,7 @@
 #include <string>
 #include "../Components/Camera.h"
 #include "../GameObjects/GameObject.h"
+#include "../Utilities/Interfaces/ISerializable.h"
 #include <vector>
 struct GLFWwindow;
 class Scene {
@@ -25,10 +26,13 @@ public:
 
     GLFWwindow* getWindow() { return this->window; }
 
+	std::string virtual serialize() = 0;
+	void virtual deserialize(std::string data) = 0;
 protected:
     gameObject* mainCamera;
     std::vector<gameObject*> cameras;
     std::vector<gameObject*> lights;
+
     GLFWwindow* window = nullptr;
 };
 

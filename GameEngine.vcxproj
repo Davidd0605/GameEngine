@@ -182,6 +182,7 @@
     <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h" />
     <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Input.h" />
+    <ClInclude Include="src\GameEngineCore\Utilities\Interfaces\ISerializable.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Time.h" />
   </ItemGroup>
   <ItemGroup>

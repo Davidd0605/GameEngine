@@ -18,6 +18,7 @@ public:
 
     GLuint ID;
     int width, height;
+    std::string path; // stored so Material can serialize texture paths
 
 private:
     GLenum format;

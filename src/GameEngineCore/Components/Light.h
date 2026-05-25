@@ -28,7 +28,9 @@ public:
 
     Light(LightType lightType, float intensity = 1.0f, glm::vec3 lightColor = glm::vec3(1),
         float range = 10.0f, glm::vec3 direction = glm::vec3(0, -1, 0), float radius = 1.0f);
-	void setDirection(glm::vec3 newDirection);
-	void setColor(glm::vec3 newColor);
+    void setDirection(glm::vec3 newDirection);
+    void setColor(glm::vec3 newColor);
+
+    std::string serialize() override;
 };
 #endif

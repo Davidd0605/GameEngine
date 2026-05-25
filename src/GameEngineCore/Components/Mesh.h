@@ -1,6 +1,5 @@
 #ifndef MESH_H
 #define MESH_H
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -38,16 +37,21 @@ public:
     VBO* getVBO();
     EBO* getEBO();
 
-    // expose raw data for raytracer later
     float* getVertices() { return vertices; }
     int* getIndices() { return indices; }
-    int getVerticesSize() { return verticesSize; }
+    int getVerticesSize() { return verticesSize; }   // vertex count
     int getIndicesSize() { return indicesSize; }
+
+    // Set true for hand-made meshes so full vertex data gets written to JSON.
+    // Model-loaded meshes leave this false; their parent's modelPath is enough.
+    bool isInlineMesh = false;
 
     void start() override;
     void update() override;
     void fixedUpdate() override;
     void end() override;
+
+    std::string serialize() override;
 
 private:
     EBO* ebo;
@@ -55,12 +59,17 @@ private:
     VAO* vao;
 
     float* vertices;
-    int verticesSize;
+    int verticesSize;   // number of vertices (not floats)
 
     int* indices;
     int indicesSize;
 
     Material* material;
+
+    // Stored so serialize() can write the full attribute layout needed to reconstruct the VAO.
+    int stride;
+    int noAttributes;
+    std::vector<int> attributeSizes;
 };
 
 #endif

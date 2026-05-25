@@ -39,6 +39,9 @@ public:
 	void addPostProcessingShaderPass(ShaderPass* sp);
 	void clearPostProcessingShaderPasses();
     std::vector<ShaderPass*> getPostProcessingShaderPasses();
+
+	std::string serialize() override;
+    void deserialize(const std::string& jsonData) override { return; };
 protected:
     using GameSystem::currentScene;
     void draw();

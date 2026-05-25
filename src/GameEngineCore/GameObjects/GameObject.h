@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include "../Components/Component.h"
 #include "../Components/Mesh.h"
+#include "../Utilities/Interfaces/ISerializable.h"
 
 /// <summary>
 /// Class for the game object.
@@ -14,7 +15,7 @@
 /// The game object can be used to represent any kind of object in the game, such as a player, an enemy, a projectile, etc.
 /// In order to avoid excessive complexity introduced by inheritance, the GO system makes use of the decorator pattern via composition.
 /// </summary>
-class gameObject {
+class gameObject : public ISerializable {
 public:
 	std::string name;
 
@@ -26,6 +27,12 @@ public:
 	void render();
 
 	std::string modelPath = "";
+
+	// Set to true for mesh children spawned by ModelLoader so they are
+	// excluded from scene serialization (the parent's modelPath is enough
+	// to reconstruct the whole hierarchy on load).
+	bool isModelChild = false;
+
 	void addComponent(Component* component);
 
 	template<typename T> T* getComponent() {
@@ -47,10 +54,10 @@ public:
 		return nullptr;
 	}
 
-	//function for serialization of game objects TBA
+	std::string serialize() override;
+	void deserialize(const std::string& jsonData) override;
 
 private:
-	std::vector<gameObject*> children;
 	std::vector<Component*> components;
 };
 

@@ -150,12 +150,12 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 			continue;
 		}
 
-		// bind material — uploads all material uniforms and textures, binds shader
+		// bind material ? uploads all material uniforms and textures, binds shader
 		mat->bind();
 
 		vao->Bind();
 
-		// system uniforms — set after material bind, these are engine-owned
+		// system uniforms ? set after material bind, these are engine-owned
 		ShaderPass* sp = mat->getShaderPass();
 
 		Transform* ts = go->getComponent<Transform>();
@@ -311,4 +311,19 @@ void RenderSystem::onResize(int width, int height) {
 				cam->getFBO()->Resize(width, height);
 		}
 	}
+}
+
+std::string RenderSystem::serialize() {
+	nlohmann::json j;
+	j["type"] = "RenderSystem";
+	j["postProcessingEnabled"] = postProcessingEnabled;
+	nlohmann::json passes = nlohmann::json::array();
+	for (auto sp : postProcessingShaderPasses) {
+		nlohmann::json pass;
+		pass["fragShader"] = sp->getFragPath();
+		pass["vertShader"] = sp->getVertPath();
+		passes.push_back(pass);
+	}
+	j["postProcessingPasses"] = passes;
+	return j.dump(2);
 }

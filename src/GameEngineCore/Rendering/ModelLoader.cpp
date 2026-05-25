@@ -5,9 +5,9 @@
 
 gameObject* ModelLoader::load(const char* filePath, Material* material) {
 
-	gameObject* parentObject = new gameObject(std::string(filePath).substr(std::string(filePath).find_last_of('/') + 1), filePath);
-	parentObject->addComponent(new Transform()); // parent object only has transform, "empty object"
-	// from transform we should be able to fetch all children transforms/gameObjects for rendering and other purposes
+    gameObject* parentObject = new gameObject(std::string(filePath).substr(std::string(filePath).find_last_of('/') + 1), filePath);
+    parentObject->addComponent(new Transform()); // parent object only has transform, "empty object"
+    // from transform we should be able to fetch all children transforms/gameObjects for rendering and other purposes
 
     Context ctx;
     ctx.material = material;
@@ -27,12 +27,12 @@ gameObject* ModelLoader::load(const char* filePath, Material* material) {
     }
 
     std::cout << "[ModelLoader] Loaded: " << filePath << " (" << ctx.result.size() << " objects)\n";
-	std::cout << "[ModelLoader] Parent object: " << parentObject->name << "\n";
-	//ctx.result contains all game objects created from the model, we need to parent them to the parentObject and return it
+    std::cout << "[ModelLoader] Parent object: " << parentObject->name << "\n";
+    //ctx.result contains all game objects created from the model, we need to parent them to the parentObject and return it
     //parent them 
     for (auto go : ctx.result) {
-		parentObject->getComponent<Transform>()->addChild(go->getComponent<Transform>());
-	}
+        parentObject->getComponent<Transform>()->addChild(go->getComponent<Transform>());
+    }
 
     //return parent
     return parentObject;
@@ -176,6 +176,7 @@ void ModelLoader::loadMesh(Context& ctx, unsigned int meshIndex, glm::mat4 matri
 
         // --- Create gameObject ---
         gameObject* go = new gameObject(meshName + "_" + std::to_string(p));
+        go->isModelChild = true;
         Transform* transform = new Transform();
         go->addComponent(transform);
         go->addComponent(mesh);

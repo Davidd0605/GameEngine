@@ -32,6 +32,8 @@ public:
 	std::vector<Transform*> getChildren();
 	std::vector<gameObject*> getChildrenGameObjects();
     void setParent(Transform* parent);
+
+	std::string serialize() override;
 private:
     void computeModel();
 

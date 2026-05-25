@@ -1,9 +1,10 @@
 #include "Transform.h"
+
 Transform::Transform() {
     this->position = glm::vec3(0.0f);
     this->rotation = glm::vec3(0.0f);
     this->scale = glm::vec3(1.0f);
-	this->parent = nullptr;
+    this->parent = nullptr;
 
     computeModel();
 }
@@ -39,7 +40,7 @@ void Transform::setRotationZ(float z) {
 }
 
 glm::mat4 Transform::getModel() {
-	return model;
+    return model;
 }
 
 glm::vec3 Transform::getPosition() {
@@ -68,7 +69,7 @@ void Transform::computeModel() {
     else {
         originSystem = glm::mat4(1.0f);
     }
-	model = originSystem * model; // apply parent transformation to model
+    model = originSystem * model;
 
     for (Transform* child : children) {
         child->computeModel();
@@ -81,8 +82,8 @@ void Transform::translate(glm::vec3 translation) {
 }
 
 void Transform::addChild(Transform* child) {
-	this->children.push_back(child);
-	child->setParent(this);
+    this->children.push_back(child);
+    child->setParent(this);
 }
 
 void Transform::removeChild(Transform* child) {
@@ -93,6 +94,7 @@ void Transform::removeChild(Transform* child) {
 std::vector<Transform*> Transform::getChildren() {
     return this->children;
 }
+
 std::vector<gameObject*> Transform::getChildrenGameObjects() {
     std::vector<gameObject*> childrenGOs;
     for (Transform* child : children) {
@@ -105,7 +107,16 @@ void Transform::setParent(Transform* parent) {
     this->parent = parent;
     computeModel();
 }
+
 void Transform::start() {}
 void Transform::update() {}
 void Transform::end() {}
 void Transform::fixedUpdate() {}
+
+std::string Transform::serialize() {
+    nlohmann::json j;
+    j["position"] = { position.x, position.y, position.z };
+    j["rotation"] = { rotation.x, rotation.y, rotation.z };
+    j["scale"] = { scale.x, scale.y, scale.z };
+    return j.dump();
+}

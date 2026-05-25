@@ -206,6 +206,9 @@
     <ClInclude Include="Spin.h">
       <Filter>Header Files\Functionalities</Filter>
     </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Utilities\Interfaces\ISerializable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\utility\plainFBO.frag">
