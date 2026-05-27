@@ -26,6 +26,9 @@ public:
 	
     bool postProcessing = false; // whether this camera should be rendered to a framebuffer for post processing effects. If true, will be rendered after all non-post-processing cameras regardless of priority.
 	FBO* getFBO() { return this->fbo; }
+
+	std::string serialize() override;
+	//using void deserialize(const std::string& jsonData);
 private:
     void recompute();
 

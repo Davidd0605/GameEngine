@@ -35,18 +35,24 @@ vec3 worldPosFromDepth(float depth) {
     vec4 world = inverse(cameraVP) * ndc;
     return world.xyz / world.w;
 }
-bool insideCylinder(vec3 samplePos, int i) {
+float cylinderInfluence(vec3 samplePos, int i) {
     vec3 lightDir = normalize(dirLights[i].direction);
     vec3 origin = dirLights[i].position;
     vec3 toSample = samplePos - origin;
     float projLen = dot(toSample, lightDir);
 
     // only the half pointing in light direction
-    if (projLen < 0.0) return false;
+    if (projLen < 0.0) return 0.0;
 
     vec3 closestPointOnAxis = origin + lightDir * projLen;
     float radialDist = length(samplePos - closestPointOnAxis);
-    return radialDist < dirLights[i].range;
+    float r = dirLights[i].range;
+
+    if (radialDist >= r) return 0.0;
+
+    // smooth quadratic falloff from center to edge
+    float x = radialDist / r;
+    return 1.0 - (x * x);
 }
 float pointLightInfluence(vec3 samplePos, int i) {
     float dist = length(samplePos - pointLights[i].position);
@@ -72,9 +78,8 @@ void main() {
         vec3 lightContrib = vec3(0.0);
         // ---------------- DIRECTIONAL LIGHTS ----------------
         for (int j = 0; j < dirLightCount; j++) {
-            if (insideCylinder(samplePos, j)) {
-                lightContrib += vec3(1.0, 0.0, 0.0);
-            }
+            float influence = cylinderInfluence(samplePos, j);
+            lightContrib += dirLights[j].color * dirLights[j].intensity * influence;
         }
         // ---------------- POINT LIGHTS ----------------
         for (int j = 0; j < pointLightCount; j++) {

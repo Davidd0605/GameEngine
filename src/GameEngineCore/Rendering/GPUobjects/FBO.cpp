@@ -45,6 +45,23 @@ void FBO::Delete() {
     //glDeleteRenderbuffers(1, &RBO);
     delete texture;
 }
+void FBO::Resize(int width, int height) {
+    // resize color texture
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+    // resize depth texture
+    glBindTexture(GL_TEXTURE_2D, depthTextureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // update stored dimensions
+    texture->width = width;
+    texture->height = height;
+    depthTexture->width = width;
+    depthTexture->height = height;
+}
 
 Texture* FBO::getTexture() { return this->texture; }
 Texture* FBO::getDepthTexture() { return this->depthTexture; }

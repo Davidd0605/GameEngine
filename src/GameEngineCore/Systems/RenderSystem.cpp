@@ -150,12 +150,12 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 			continue;
 		}
 
-		// bind material — uploads all material uniforms and textures, binds shader
+		// bind material ? uploads all material uniforms and textures, binds shader
 		mat->bind();
 
 		vao->Bind();
 
-		// system uniforms — set after material bind, these are engine-owned
+		// system uniforms ? set after material bind, these are engine-owned
 		ShaderPass* sp = mat->getShaderPass();
 
 		Transform* ts = go->getComponent<Transform>();
@@ -191,6 +191,16 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 /// Main draw function of the render system
 /// </summary>
 void RenderSystem::draw() {
+	GLFWwindow* window = currentScene->getWindow();
+	if (window) {
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		if (width != currentWidth || height != currentHeight) {
+			currentWidth = width;
+			currentHeight = height;
+			onResize(width, height);
+		}
+	}
 	gameObject* mainCamGO = this->currentScene->getMainCamera();
 	Camera* mainCam = mainCamGO->getComponent<Camera>();
 
@@ -286,3 +296,34 @@ void RenderSystem::clearPostProcessingShaderPasses() {
 	);
 }
 
+void RenderSystem::onResize(int width, int height) {
+	glViewport(0, 0, width, height);
+
+	fbos[0]->Resize(width, height);
+	fbos[1]->Resize(width, height);
+
+	gameObject* mainCamGO = currentScene->getMainCamera();
+	if (mainCamGO) {
+		Camera* cam = mainCamGO->getComponent<Camera>();
+		if (cam) {
+			cam->setAspectRatio((float)width / (float)height);
+			if (cam->getFBO())
+				cam->getFBO()->Resize(width, height);
+		}
+	}
+}
+
+std::string RenderSystem::serialize() {
+	nlohmann::json j;
+	j["type"] = "RenderSystem";
+	j["postProcessingEnabled"] = postProcessingEnabled;
+	nlohmann::json passes = nlohmann::json::array();
+	for (auto sp : postProcessingShaderPasses) {
+		nlohmann::json pass;
+		pass["fragShader"] = sp->getFragPath();
+		pass["vertShader"] = sp->getVertPath();
+		passes.push_back(pass);
+	}
+	j["postProcessingPasses"] = passes;
+	return j.dump(2);
+}

@@ -69,3 +69,15 @@ float Camera::getFov() {
 }
 
 void Camera::fixedUpdate() {}
+
+std::string Camera::serialize() {
+    nlohmann::json j;
+    j["type"] = "Camera";
+    j["fov"] = fov;
+    j["aspectRatio"] = aspectRatio;
+    j["nearPlane"] = nearPlane;
+    j["farPlane"] = farPlane;
+    j["priority"] = priority;
+    j["postProcessing"] = postProcessing;
+    return j.dump();
+}

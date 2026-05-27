@@ -1,12 +1,14 @@
 #include "GameScene.h"
 #include <iostream>
+#include <fstream>
+#include <direct.h>
+#include <json/json.h>
 
 void GameScene::update()
 {
 	for (auto go : gameObjects) {
 		go->update();
 	}
-
 	for (auto sy : systems) {
 		sy->update();
 	}
@@ -28,13 +30,11 @@ void GameScene::start()
 		sy->start();
 	}
 }
-
 void GameScene::end()
 {
 	for (auto go : gameObjects) {
 		go->end();
 	}
-
 	for (auto sy : systems) {
 		sy->end();
 	}
@@ -42,15 +42,11 @@ void GameScene::end()
 
 void GameScene::addObject(gameObject* go) {
 	this->gameObjects.push_back(go);
-
-	// Auto-register camera
 	Camera* cam = go->getComponent<Camera>();
 	if (cam != nullptr) {
 		cameras.push_back(go);
 		sortCameras();
 	}
-
-	// Auto-register light
 	Light* light = go->getComponent<Light>();
 	if (light != nullptr) {
 		lights.push_back(go);
@@ -91,4 +87,51 @@ gameObject* GameScene::findObjectByName(const std::string& name) {
 		if (go->name == name) return go;
 	}
 	return nullptr;
+}
+
+std::string GameScene::serialize() {
+	nlohmann::json j;
+	j["name"] = name;
+
+	nlohmann::json goArray = nlohmann::json::array();
+	for (auto go : gameObjects) {
+		if (go->isModelChild) continue;
+		try {
+			goArray.push_back(nlohmann::json::parse(go->serialize()));
+		}
+		catch (...) {
+			goArray.push_back(go->serialize());
+		}
+	}
+	j["gameObjects"] = goArray;
+
+	nlohmann::json sysArray = nlohmann::json::array();
+	for (auto sy : systems) {
+		std::string sysJson = sy->serialize();
+		if (!sysJson.empty()) {
+			try {
+				sysArray.push_back(nlohmann::json::parse(sysJson));
+			}
+			catch (...) {
+				sysArray.push_back(sysJson);
+			}
+		}
+	}
+	j["systems"] = sysArray;
+
+	std::string result = j.dump(2);
+
+	_mkdir("scenes");
+	std::string filePath = "scenes/" + name + ".json";
+	std::ofstream out(filePath);
+	if (out.is_open()) {
+		out << result;
+		out.close();
+		std::cout << "[GameScene] Serialized to " << filePath << "\n";
+	}
+	else {
+		std::cerr << "[GameScene] WARNING :: Could not write to " << filePath << "\n";
+	}
+
+	return result;
 }

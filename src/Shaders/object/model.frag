@@ -19,6 +19,7 @@ struct PointLight {
     float range;
 };
 struct DirectionalLight {
+    vec3 position;    // add this
     vec3 direction;
     vec3 color;
     float intensity;
@@ -45,7 +46,7 @@ void main() {
     vec3 norm = normalize(normal + normalSample * 0.5);
 
     vec3 viewDir = normalize(viewPos - fragPos);
-    vec3 result = vec3(0.1); // ambient
+    vec3 result = vec3(0.3); // ambient
 
     // point lights
     for (int i = 0; i < pointLightCount; i++) {
@@ -65,10 +66,9 @@ void main() {
     // directional lights
     for (int i = 0; i < dirLightCount; i++) {
         vec3 lightDir = normalize(-dirLights[i].direction);
-        vec3 lightOrigin = -lightDir * 1000.0;
-        vec3 toFrag = fragPos - lightOrigin;
+        vec3 toFrag = fragPos - dirLights[i].position;
         float projLen = dot(toFrag, lightDir);
-        vec3 closestPoint = lightOrigin + lightDir * projLen;
+        vec3 closestPoint = dirLights[i].position + lightDir * projLen;
         float lateralDist = length(fragPos - closestPoint);
         if (lateralDist > dirLights[i].range) continue;
         float attenuation = 1.0 - clamp(lateralDist / dirLights[i].range, 0.0, 1.0);

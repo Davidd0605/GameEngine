@@ -1,7 +1,10 @@
 #include "GameObject.h"
+#include <json/json.h>
 
-gameObject::gameObject(std::string name) {
+gameObject::gameObject(std::string name, std::string modelPath) {
+	this->modelPath = modelPath;
 	this->name = name;
+	this->isModelChild = false;
 }
 
 void gameObject::start() {
@@ -42,3 +45,32 @@ void gameObject::addComponent(Component* component) {
 	component->owner = this;
 	components.push_back(component);
 }
+
+std::string gameObject::serialize() {
+	nlohmann::json j;
+	j["name"] = name;
+
+	if (!modelPath.empty()) {
+		j["modelPath"] = modelPath;
+	}
+
+	for (auto component : components) {
+		std::string typeName = typeid(*component).name();
+		std::string componentJson = component->serialize();
+
+		// Only embed non-empty serializations as proper nested objects.
+		// Empty string means the component opted out (e.g. Functionality subclasses).
+		if (!componentJson.empty()) {
+			try {
+				j["components"][typeName] = nlohmann::json::parse(componentJson);
+			}
+			catch (...) {
+				// If it somehow isn't valid JSON, store as plain string so we don't lose it.
+				j["components"][typeName] = componentJson;
+			}
+		}
+	}
+
+	return j.dump(2);
+}
+
