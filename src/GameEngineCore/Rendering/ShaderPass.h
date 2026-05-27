@@ -37,10 +37,12 @@ public:
     void setVec4(const std::string& name, const glm::vec4& value) const;
     void setVec3(const std::string& name, const glm::vec3& value) const;
     GLuint getID();
-
     std::vector<UniformInfo> getMaterialUniforms() const;
-
+    const std::string& getFragPath() const { return fragPath; }
+    const std::string& getVertPath() const { return vertPath; }
 private:
     GLuint ID;
+    std::string fragPath;
+    std::string vertPath;
 };
 #endif

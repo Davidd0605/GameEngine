@@ -1,4 +1,5 @@
 #include "Light.h"
+#include <json/json.h>
 
 void Light::update() {}
 void Light::start() {}
@@ -27,3 +28,14 @@ void Light::setColor(glm::vec3 newColor) {
     this->lightColor = newColor;
 }
 LightType Light::getType() { return this->lightType; }
+
+std::string Light::serialize() {
+    nlohmann::json j;
+    j["lightType"] = static_cast<int>(lightType); // 0=Directional, 1=Point, 2=Spot
+    j["color"] = { lightColor.r, lightColor.g, lightColor.b };
+    j["intensity"] = intensity;
+    j["range"] = range;
+    j["radius"] = radius;
+    j["direction"] = { direction.x, direction.y, direction.z };
+    return j.dump();
+}

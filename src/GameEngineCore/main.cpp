@@ -25,6 +25,7 @@
 #include "Functionalities/lightSpin.h"
 #include "Components/Light.h"
 #include "Rendering/Material.h"
+#include "../../SceneSerializer.h"
 
 #define elif else if
 
@@ -77,9 +78,9 @@ void setupGL(GLFWwindow*& window) {
 	glfwSetScrollCallback(window, Input::scrollCallback);
 }
 
-void globalStart(Scene* scene) { scene->start(); }
+void globalStart(GameScene* scene) { scene->start(); }
 
-void globalUpdate(Scene* scene) {
+void globalUpdate(GameScene* scene) {
 	while (!glfwWindowShouldClose(window)) {
 		Time::update();
 		Input::update(window);
@@ -97,10 +98,15 @@ void globalUpdate(Scene* scene) {
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		
 	}
+	scene->serialize();
 }
 
-void globalEnd(Scene* scene) { scene->end(); }
+void globalEnd(GameScene* scene) {
+	scene->end();
+}
 
 // --- UTILITY FUNCTIONS ---
 
@@ -112,10 +118,11 @@ gameObject* makeCube(float* vertices, int vertexCount, int verticesBytes, int at
 
 	ShaderPass* sp = new ShaderPass("src/Shaders/object/basic.frag", "src/Shaders/object/basic.vert");
 	Material* mat = new Material(sp);
-	//mat->setTexture(0, "resources/textures/damian.jpeg");
+	mat->setTexture(0, "resources/textures/damian.jpeg");
 
-
-	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
+	Mesh* mesh = new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes);
+	mesh->isInlineMesh = true;
+	go->addComponent(mesh);
 
 	go->getComponent<Transform>()->setPosition(position);
 	go->getComponent<Transform>()->setRotationX(rotation.x);
@@ -136,7 +143,9 @@ gameObject* makeLight(float* vertices, int vertexCount, int verticesBytes, int a
 
 	ShaderPass* sp = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
 	Material* mat = new Material(sp);
-	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
+	Mesh* mesh = new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes);
+	mesh->isInlineMesh = true;
+	go->addComponent(mesh);
 
 	return go;
 }
@@ -152,129 +161,141 @@ gameObject* makeDirectionalLight(float* vertices, int vertexCount, int verticesB
 
 	ShaderPass* sp = new ShaderPass("src/Shaders/object/light.frag", "src/Shaders/object/light.vert");
 	Material* mat = new Material(sp);
-	go->addComponent(new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes));
+	Mesh* mesh = new Mesh(vertices, vertexCount, verticesBytes, mat, 8, 3, attributeSizes);
+	mesh->isInlineMesh = true;
+	go->addComponent(mesh);
 
 	return go;
 }
 
 int main() {
-
-	// --- START OF SCENE SETUP ---
 	setupGL(window);
 
-	GameScene* gameScene = new GameScene("Test game scene 1");
+	bool loadFromFile = false; // <-- flip to true to load from saved scene
 
-	// x, y, z,   nx, ny, nz,   u, v
-	float cubeVertices[] = {
-		// Front
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-		// Back
-		 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 0.0f,
-		 // Left
-		 -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-		 -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
-		 -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-		 -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-		 -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
-		 -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-		 // Right
-		  0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-		  0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
-		  0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-		  0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-		  0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
-		  0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-		  // Top
-		  -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
-		   0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-		   0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-		   0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-		  -0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
-		  -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
-		  // Bottom
-		  -0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 0.0f,
-		   0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 0.0f,
-		   0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 1.0f,
-		   0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 1.0f,
-		  -0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 1.0f,
-		  -0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 0.0f,
-	};
-	int attributeSizes[] = { 3, 3, 2 }; // pos, normal, uv
+	GameScene* gameScene = nullptr;
 
-	//some random objects
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
-
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(-3.0f, 0.0f, -5.0f), glm::vec3(30.0f, 45.0f, 0.0f), "Cube_Left"));
-
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(3.0f, 0.0f, -5.0f), glm::vec3(-20.0f, 60.0f, 0.0f), "Cube_Right"));
-
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 2.5f, -7.0f), glm::vec3(45.0f, 15.0f, 0.0f), "Cube_Top"));
-
-	gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, -2.5f, -3.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
-
-	//main camera
-	gameObject* cameraGO = new gameObject("MainCamera");
-	cameraGO->addComponent(new Transform());
-	cameraGO->addComponent(new Camera(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f, 0, true));
-	cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-	cameraGO->addComponent(new CameraController(5.0f));
-	gameScene->addObject(cameraGO);
-
-	//add render system and post-processing passes
-	gameScene->addSystem(new RenderSystem());
-	gameScene->getSystem<RenderSystem>()->postProcessingEnabled = true;
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass( new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
-	gameScene->getSystem<RenderSystem>()->addPostProcessingShaderPass( new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
-
-	//Create scene lights
-	gameObject* dirLight = makeDirectionalLight(
-		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 15.0f, 0.0f),
-		glm::vec3(0.0f, -1.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		1.0f, 1.0f, "Light_1"
-	);
-	gameScene->addObject(dirLight);
-
-	gameObject* pointLight = makeLight(
-		cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-		glm::vec3(0.0f, 3.0f, 3.0f),
-		glm::vec3(1.0f, 0.0f, 1.0f),
-		1.0f, 5.0f, "Light_2"
-	);
-	gameScene->addObject(pointLight);
-
-	//Load models
-	ShaderPass* modelShader = new ShaderPass("src/Shaders/object/model.frag", "src/Shaders/object/model.vert");
-	Material* modelMaterial = new Material(modelShader);
-
-	std::vector<gameObject*> sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelMaterial);
-	std::vector<gameObject*> bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelMaterial);
-
-	for (gameObject* go : sponza)
-		gameScene->addObject(go);
-
-	for (gameObject* go : bunny) {
-		go->getComponent<Transform>()->setRotationX(90);
-		gameScene->addObject(go);
+	if (loadFromFile) {
+		gameScene = SceneSerializer::deserializeFromFile("scenes/Test game scene 1.json", window);
+		gameObject* cam = gameScene->getMainCamera();
+		if (cam) cam->addComponent(new CameraController(5.0f));
 	}
+	else {
+		gameScene = new GameScene("Test game scene 67", window);
 
-	// --- END OF SCENE SETUP ---
+		// x, y, z,   nx, ny, nz,   u, v
+		float cubeVertices[] = {
+			// Front
+			-0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+			// Back
+			 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,-1.0f,   0.0f, 0.0f,
+			 // Left
+			 -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+			 -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
+			 -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+			 -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+			 -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
+			 -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+			 // Right
+			  0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+			  0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
+			  0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+			  0.5f,  0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
+			  0.5f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
+			  0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+			  // Top
+			  -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+			   0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+			   0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+			   0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+			  -0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
+			  -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+			  // Bottom
+			  -0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 0.0f,
+			   0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 0.0f,
+			   0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 1.0f,
+			   0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   1.0f, 1.0f,
+			  -0.5f, -0.5f,  0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 1.0f,
+			  -0.5f, -0.5f, -0.5f,   0.0f,-1.0f, 0.0f,   0.0f, 0.0f,
+		};
+		int attributeSizes[] = { 3, 3, 2 }; // pos, normal, uv
+
+		// some random objects
+		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
+
+		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(-3.0f, 0.0f, -5.0f), glm::vec3(30.0f, 45.0f, 0.0f), "Cube_Left"));
+
+		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(3.0f, 0.0f, -5.0f), glm::vec3(-20.0f, 60.0f, 0.0f), "Cube_Right"));
+
+		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(0.0f, 2.5f, -7.0f), glm::vec3(45.0f, 15.0f, 0.0f), "Cube_Top"));
+
+		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
+
+		// main camera
+		gameObject* cameraGO = new gameObject("MainCamera");
+		cameraGO->addComponent(new Transform());
+		cameraGO->addComponent(new Camera(45.0f, (float)globalWidth / (float)globalHeight, 0.1f, 100.0f, 0, true));
+		cameraGO->getComponent<Transform>()->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+		cameraGO->addComponent(new CameraController(5.0f));
+		gameScene->addObject(cameraGO);
+
+		// render system and post-processing passes
+		RenderSystem* rs = new RenderSystem();
+		gameScene->addSystem(rs);
+		rs->postProcessingEnabled = true;
+		rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
+		rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
+		rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/painting.frag", "src/Shaders/utility/plainFBO.vert"));
+
+		// lights
+		gameObject* dirLight = makeDirectionalLight(
+			cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(-1.0f, 5.0f, -1.0f),
+			glm::vec3(1.0f, -1.0f, 1.0f),
+			glm::vec3(1.0f, 1.0f, 1.0f),
+			1.0f, 5.0f, "Light_1"
+		);
+		gameScene->addObject(dirLight);
+
+		gameObject* pointLight = makeLight(
+			cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+			glm::vec3(0.0f, 3.0f, 3.0f),
+			glm::vec3(1.0f, 1.0f, 1.0f),
+			1.0f, 5.0f, "Light_2"
+		);
+		gameScene->addObject(pointLight);
+
+		// models
+		ShaderPass* modelShader = new ShaderPass("src/Shaders/object/model.frag", "src/Shaders/object/model.vert");
+		Material* modelMaterial = new Material(modelShader);
+
+		gameObject* sponza = ModelLoader::load("resources/models/sponza/Sponza.gltf", modelMaterial);
+		gameObject* bunny = ModelLoader::load("resources/models/bunny/Scene.gltf", modelMaterial);
+		gameObject* room = ModelLoader::load("resources/models/room/room.gltf", modelMaterial);
+
+		gameScene->addObject(sponza);
+		for (gameObject* go : sponza->getComponent<Transform>()->getChildrenGameObjects())
+			gameScene->addObject(go);
+
+		gameScene->addObject(room);
+		for (gameObject* go : room->getComponent<Transform>()->getChildrenGameObjects())
+			gameScene->addObject(go);
+	}
 
 	// --- START GAME LOOP ---
 	globalStart(gameScene);

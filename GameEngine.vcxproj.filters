@@ -55,6 +55,9 @@
     <Filter Include="Header Files\General">
       <UniqueIdentifier>{63b71ebd-30f2-48b0-817a-d921b439ae43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{6be40ea6-e1b1-43ed-a8ae-b027464d00aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -120,16 +123,13 @@
     <ClCompile Include="src\GameEngineCore\Rendering\Material.cpp">
       <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
+    <ClCompile Include="SceneSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h">
       <Filter>Header Files\Functionalities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Camera.h">
-      <Filter>Header Files\General</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Component.h">
-      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\EBO.h">
       <Filter>Header Files\General</Filter>
@@ -155,9 +155,6 @@
     <ClInclude Include="LightTypes.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
-      <Filter>Header Files\General</Filter>
-    </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\ModelLoader.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
@@ -176,16 +173,10 @@
     <ClInclude Include="src\GameEngineCore\Utilities\Time.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Transform.h">
-      <Filter>Header Files\General</Filter>
-    </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VAO.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\GPUobjects\VBO.h">
-      <Filter>Header Files\General</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameEngineCore\Components\Light.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Functionalities\lightSpin.h">
@@ -193,6 +184,33 @@
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Rendering\Material.h">
       <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Light.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Camera.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Components\Transform.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Spin.h">
+      <Filter>Header Files\Functionalities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngineCore\Utilities\Interfaces\ISerializable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSerializer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

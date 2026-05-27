@@ -109,6 +109,8 @@ ShaderPass::ShaderPass(const char* fragmentShaderPath, const char* vertexShaderP
 	}
 }
 ShaderPass::ShaderPass(const char* fragmentShaderPath, const char* vertexShaderPath) {
+	this->fragPath = fragmentShaderPath;
+	this->vertPath = vertexShaderPath;
 	// Same behaviour as the three-shader constructor but without geometry shader handling.
 
 	std::string vertexCode;
@@ -187,11 +189,11 @@ GLuint ShaderPass::getID() {
 	return ID;
 }
 
-void ShaderPass::bind() const{
+void ShaderPass::bind() const {
 	glUseProgram(ID);
 }
 
-void ShaderPass::unbind() const{
+void ShaderPass::unbind() const {
 	glUseProgram(0);
 }
 void ShaderPass::setVec3(const std::string& name, const glm::vec3& value) const
@@ -223,7 +225,7 @@ void ShaderPass::setFloat(const std::string& name, float value) const
 
 void ShaderPass::setMatrix4(const std::string& name, glm::mat4 value) const
 {
-	bind();	
+	bind();
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 

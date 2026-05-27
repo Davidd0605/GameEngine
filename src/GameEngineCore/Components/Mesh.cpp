@@ -11,6 +11,10 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
     this->indices = indices;
     this->verticesSize = verticesSize;
     this->indicesSize = indicesSize;
+    this->stride = stride;
+    this->noAttributes = noAttributes;
+    for (int i = 0; i < noAttributes; i++)
+        this->attributeSizes.push_back(attributeSize[i]);
 
     vbo = nullptr;
     ebo = nullptr;
@@ -32,6 +36,10 @@ Mesh::Mesh(float vertices[], int verticesSize, int verticesBytes,
     this->verticesSize = verticesSize;
     this->indices = nullptr;
     this->indicesSize = 0;
+    this->stride = stride;
+    this->noAttributes = noAttributes;
+    for (int i = 0; i < noAttributes; i++)
+        this->attributeSizes.push_back(attributeSize[i]);
 
     vbo = nullptr;
     ebo = nullptr;
@@ -61,3 +69,34 @@ void Mesh::start() {}
 void Mesh::update() {}
 void Mesh::end() {}
 void Mesh::fixedUpdate() {}
+
+std::string Mesh::serialize() {
+    nlohmann::json j;
+    j["verticesSize"] = verticesSize;   // vertex count
+    j["indicesSize"] = indicesSize;
+    j["hasIndices"] = (indices != nullptr);
+    j["stride"] = stride;
+    j["attributeSizes"] = attributeSizes;
+
+    if (isInlineMesh) {
+        // verticesSize is the vertex COUNT; total floats = verticesSize * stride
+        int totalFloats = verticesSize * stride;
+        nlohmann::json verts = nlohmann::json::array();
+        for (int i = 0; i < totalFloats; i++)
+            verts.push_back(vertices[i]);
+        j["vertices"] = verts;
+
+        if (indices) {
+            nlohmann::json inds = nlohmann::json::array();
+            for (int i = 0; i < indicesSize; i++)
+                inds.push_back(indices[i]);
+            j["indices"] = inds;
+        }
+
+        // Serialize the full material (shader paths, textures, uniforms)
+        if (material)
+            j["material"] = nlohmann::json::parse(material->serialize());
+    }
+
+    return j.dump();
+}

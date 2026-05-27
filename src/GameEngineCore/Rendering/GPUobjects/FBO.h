@@ -18,7 +18,7 @@ public:
     void Delete();
     Texture* getTexture();
     Texture* getDepthTexture();
-
+    void Resize(int width, int height);
 private:
     GLuint RBO;
     Texture* texture;

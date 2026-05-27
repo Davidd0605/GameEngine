@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="SceneSerializer.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Camera.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Light.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp" />
@@ -157,6 +158,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightTypes.h" />
+    <ClInclude Include="SceneLoader.h" />
+    <ClInclude Include="SceneSerializer.h" />
+    <ClInclude Include="Spin.h" />
     <ClInclude Include="src\GameEngineCore\Components\Camera.h" />
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />
     <ClInclude Include="src\GameEngineCore\Components\Light.h" />
@@ -179,6 +183,7 @@
     <ClInclude Include="src\GameEngineCore\Systems\GameSystem.h" />
     <ClInclude Include="src\GameEngineCore\Systems\RenderSystem.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Input.h" />
+    <ClInclude Include="src\GameEngineCore\Utilities\Interfaces\ISerializable.h" />
     <ClInclude Include="src\GameEngineCore\Utilities\Time.h" />
   </ItemGroup>
   <ItemGroup>

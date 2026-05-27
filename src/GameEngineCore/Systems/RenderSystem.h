@@ -39,6 +39,9 @@ public:
 	void addPostProcessingShaderPass(ShaderPass* sp);
 	void clearPostProcessingShaderPasses();
     std::vector<ShaderPass*> getPostProcessingShaderPasses();
+
+	std::string serialize() override;
+    void deserialize(const std::string& jsonData) override { return; };
 protected:
     using GameSystem::currentScene;
     void draw();
@@ -46,7 +49,10 @@ protected:
 private:
     void renderSceneObjects(gameObject* camGO);
     void blitToScreen(GLuint textureID, GLuint depthID, ShaderPass* sp);
-	std::vector<ShaderPass*> postProcessingShaderPasses;
+    void onResize(int width, int height);  
+	std::vector<ShaderPass*> postProcessingShaderPasses;      
+    int currentWidth = 0;                
+    int currentHeight = 0;                 
 };
 
 #endif
