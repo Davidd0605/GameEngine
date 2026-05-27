@@ -74,6 +74,3 @@ std::string gameObject::serialize() {
 	return j.dump(2);
 }
 
-void gameObject::deserialize(const std::string& jsonData) {
-	// TODO
-}

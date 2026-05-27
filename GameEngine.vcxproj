@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="SceneSerializer.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Camera.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Light.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp" />

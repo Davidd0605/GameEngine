@@ -123,6 +123,9 @@
     <ClCompile Include="src\GameEngineCore\Rendering\Material.cpp">
       <Filter>Source Files\GPU Objects</Filter>
     </ClCompile>
+    <ClCompile Include="SceneSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameEngineCore\Functionalities\CameraController.h">
@@ -185,9 +188,6 @@
     <ClInclude Include="SceneLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\GameEngineCore\Components\Mesh.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -207,6 +207,9 @@
       <Filter>Header Files\Functionalities</Filter>
     </ClInclude>
     <ClInclude Include="src\GameEngineCore\Utilities\Interfaces\ISerializable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

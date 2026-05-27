@@ -55,7 +55,7 @@ public:
 	}
 
 	std::string serialize() override;
-	void deserialize(const std::string& jsonData) override;
+
 
 private:
 	std::vector<Component*> components;

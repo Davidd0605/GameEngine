@@ -8,7 +8,6 @@ class ISerializable
 {
 public:
 	virtual std::string serialize() = 0;
-	virtual void deserialize(const std::string& jsonData) = 0;
 
 private:
 	std::string jsonData; // Placeholder for serialized data, can be replaced with actual JSON library or format
