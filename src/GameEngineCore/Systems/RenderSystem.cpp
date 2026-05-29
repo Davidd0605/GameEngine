@@ -138,6 +138,9 @@ void RenderSystem::renderSceneObjects(gameObject* camGO) {
 	const std::vector<gameObject*>& gos = this->currentScene->getGameObjects();
 	Camera* cam = camGO->getComponent<Camera>();
 
+	if (skyBox) {
+		skyBox->render(cam->getViewMatrix(), cam->getProjectionMatrix());
+	}
 	for (auto go : gos) {
 		Mesh* ms = go->getComponent<Mesh>();
 		if (ms == nullptr) continue;
@@ -326,4 +329,11 @@ std::string RenderSystem::serialize() {
 	}
 	j["postProcessingPasses"] = passes;
 	return j.dump(2);
+}
+
+void RenderSystem::AddSkyBox(std::vector<std::string> paths) {
+	if (skyBox) {
+		delete skyBox;
+	}
+	skyBox = new SkyBox(paths);
 }

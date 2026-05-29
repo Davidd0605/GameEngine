@@ -14,6 +14,8 @@ public:
     Camera(float fov, float aspectRatio, float nearPlane, float farPlane, int priority = 0, bool postprocessing = false);
 
     glm::mat4 getVPMatrix();
+    glm::mat4 getViewMatrix() { return this->viewMatrix; };
+	glm::mat4 getProjectionMatrix() { return this->projectionMatrix; }
     void setAspectRatio(float aspectRatio);
 
     void start() override;

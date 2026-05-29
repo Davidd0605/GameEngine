@@ -11,7 +11,7 @@
 #include "../Rendering/ShaderPass.h"
 #include <glad/glad.h>
 #include <vector>
-
+#include "../../SkyBox.h"
 /// <summary>
 /// RenderSystem is responsible for rendering the game objects in the current scene. 
 /// It uses the main camera to determine the view and projection matrices, and renders all objects with a Mesh component. 
@@ -42,6 +42,7 @@ public:
 
 	std::string serialize() override;
     void deserialize(const std::string& jsonData) override { return; };
+	void AddSkyBox(std::vector<std::string> paths); 
 protected:
     using GameSystem::currentScene;
     void draw();
@@ -52,7 +53,8 @@ private:
     void onResize(int width, int height);  
 	std::vector<ShaderPass*> postProcessingShaderPasses;      
     int currentWidth = 0;                
-    int currentHeight = 0;                 
+    int currentHeight = 0;
+	SkyBox* skyBox = nullptr;
 };
 
 #endif

@@ -231,7 +231,7 @@ int main() {
 		int attributeSizes[] = { 3, 3, 2 }; // pos, normal, uv
 
 		// some random objects
-		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
+		/*gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
 			glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), "Cube_Center"));
 
 		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
@@ -244,7 +244,7 @@ int main() {
 			glm::vec3(0.0f, 2.5f, -7.0f), glm::vec3(45.0f, 15.0f, 0.0f), "Cube_Top"));
 
 		gameScene->addObject(makeCube(cubeVertices, 36, sizeof(cubeVertices), attributeSizes,
-			glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));
+			glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 90.0f, 0.0f), "Cube_Bottom"));*/
 
 		// main camera
 		gameObject* cameraGO = new gameObject("MainCamera");
@@ -259,8 +259,16 @@ int main() {
 		gameScene->addSystem(rs);
 		rs->postProcessingEnabled = true;
 		rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/edgedetection.frag", "src/Shaders/utility/plainFBO.vert"));
-		rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
-		rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/painting.frag", "src/Shaders/utility/plainFBO.vert"));
+		//rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/volumetricFog.frag", "src/Shaders/utility/plainFBO.vert"));
+		//rs->addPostProcessingShaderPass(new ShaderPass("src/Shaders/postprocessing/painting.frag", "src/Shaders/utility/plainFBO.vert"));
+		rs->AddSkyBox({
+			"resources/textures/skyboxes/sb1/px.png",  // +X right
+			"resources/textures/skyboxes/sb1/nx.png",  // -X left
+			"resources/textures/skyboxes/sb1/py.png",  // +Y up
+			"resources/textures/skyboxes/sb1/ny.png",  // -Y down
+			"resources/textures/skyboxes/sb1/pz.png",  // +Z front
+			"resources/textures/skyboxes/sb1/nz.png"   // -Z back
+			});
 
 		// lights
 		gameObject* dirLight = makeDirectionalLight(

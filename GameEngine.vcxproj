@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="SceneSerializer.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Camera.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Light.cpp" />
     <ClCompile Include="src\GameEngineCore\Components\Mesh.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="SceneSerializer.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Spin.h" />
     <ClInclude Include="src\GameEngineCore\Components\Camera.h" />
     <ClInclude Include="src\GameEngineCore\Components\Component.h" />
